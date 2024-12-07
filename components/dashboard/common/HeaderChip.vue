@@ -17,7 +17,10 @@ const props = defineProps({
     type: String,
     default: 'elementos'
   },
-  color: String,
+  color: {
+    type: String,
+    default: 'primary'
+  },
   tooltip_complement: String,
 })
 

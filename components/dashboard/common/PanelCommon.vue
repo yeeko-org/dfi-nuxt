@@ -15,9 +15,11 @@ const props = defineProps({
 
 const full_main = ref({})
 const edit_component = shallowRef('')
+const edit_full_component = shallowRef('')
 const route_key = computed(() => props.collection_data.app_label)
 const snake_name = computed(() => props.collection_data.snake_name)
 const edit_name = computed(() => `${props.collection_data.model_name}Edit`)
+const edit_name_full = computed(() => `${props.collection_data.model_name}EditFull`)
 
 const emits = defineEmits(['finish-open', 'item-saved'])
 
@@ -29,6 +31,15 @@ import(`~/components/dashboard/${route_key.value}/${snake_name.value}/${edit_nam
     import(`~/components/dashboard/generic/EditGeneric.vue`).then(module => {
       edit_component.value = module.default
     })
+  })
+
+
+import(`~/components/dashboard/${route_key.value}/${snake_name.value}/${edit_name_full.value}.vue`)
+  .then(module => {
+    edit_full_component.value = module.default
+  })
+  .catch(e => {
+    edit_full_component.value = null
   })
 
 
@@ -98,7 +109,15 @@ const itemSaved = ({res, is_new}) => {
           :color="background_color"
           class="mt-n2 mb-n4 pa-3"
         >
+          <component
+            v-if="edit_full_component"
+            :is="edit_full_component"
+            :full_main="full_main"
+            @item-saved="itemSaved"
+          />
+
           <EditCommon
+            v-else
             :full_main="full_main"
             :collection_data="collection_data"
             @item-saved="itemSaved"

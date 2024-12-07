@@ -22,12 +22,12 @@ const props = defineProps({
 const child_collections = computed(() => {
   if (!props.collection_data)
     return []
-  console.log("collection_data", props.collection_data)
+  // console.log("collection_data", props.collection_data)
   let result = []
   props.collection_data.child_relations.forEach(child => {
     let is_category = false
     if (!child.is_multiple && child.link_type !== "category") {
-      console.log("child", child)
+      // console.log("child", child)
       is_category = true
       // return
     }

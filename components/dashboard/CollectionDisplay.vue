@@ -4,15 +4,7 @@ import {useMainStore} from '~/store/index'
 import SelectFilters from "~/components/dashboard/common/SelectFilters.vue";
 import PanelResult from "~/components/dashboard/common/PanelsResult.vue";
 import {final_sorts, status_filters} from "~/composables/filters.js";
-// import {
-//   final_filters,
-//   loading_fetch,
-//   results,
-//   show_details,
-//   total_count,
-//   temp_reset,
-//   // collection_data,
-// } from "~/composables/fetch.js";
+
 import {storeToRefs} from "pinia";
 import ExportButton from "~/components/dashboard/generic/ExportButton.vue";
 import _debounce from "lodash/debounce.js";
@@ -37,6 +29,7 @@ const init_filters = {
 }
 
 const results = ref([])
+const q_value = ref("")
 const loading_fetch = ref(false)
 const show_details = ref(false)
 const total_count = ref(0)
@@ -47,8 +40,8 @@ const final_filters = ref({
   page_size: 40,
   ...init_filters,
 })
-const temp_reset = ref(false)
 
+const temp_reset = ref(false)
 const visible_filters = ref([])
 const current_filters = ref([])
 // const panel_result = useTemplateRef('panel-result')
@@ -61,7 +54,7 @@ onBeforeMount(() => {
 })
 
 onMounted(() => {
-  changeFilters()
+  initFilters()
 })
 
 const collection_data = computed(() => {
@@ -75,11 +68,18 @@ watch(
   final_filters, (val) => {
     // console.log("final_filters", val)
     if (!temp_reset.value)
-      debounceApplyFilters()
+      applyFilters()
     else
       temp_reset.value = false
   },
-  {deep: true}
+  {deep: true},
+)
+
+watch(
+  q_value, (val) => {
+    debounceApplyFilters()
+  }
+
 )
 
 const is_category = computed(() =>
@@ -87,7 +87,7 @@ const is_category = computed(() =>
 
 const debounceApplyFilters = _debounce(() => {
   applyFilters()
-}, 600)
+}, 800)
 
 function applyFilters() {
   loading_fetch.value = true
@@ -96,7 +96,8 @@ function applyFilters() {
   if (is_category.value)
     collection_name = `catalogs/${collection_name}`
   results.value = []
-  fetchElements([collection_name, final_filters.value]).then(res => {
+  const params = {...final_filters.value, q: q_value.value}
+  fetchElements([collection_name, params]).then(res => {
     loading_fetch.value = false
     if (!res.results){
       total_count.value = res.length
@@ -110,7 +111,6 @@ function applyFilters() {
   })
 }
 
-
 function changeShowDetails() {
   nextTick(() => {
     setTimeout(() => {
@@ -120,7 +120,7 @@ function changeShowDetails() {
 }
 
 function resetFilters() {
-  if (!is_category.value)
+  if (!is_category.value && !collection_data.value.cat_params?.init_display)
     temp_reset.value = true
   final_filters.value = {
     page: 1,
@@ -135,18 +135,20 @@ function resetFilters() {
   visible_filters.value = []
 }
 
-function changeFilters() {
+function initFilters() {
+  // console.log("changeFilters", collection_data.value)
   if (!collection_data.value)
     return
   const all_filters = collection_data.value.all_filters || []
+  // console.log("all_filters", all_filters)
   // console.log("collection_data", collection_data.value)
   // console.log("level_name", props.level_name)
   // console.log("filter_group", props.filter_group)
   let collection_filters = all_filters.reduce((arr, f) => {
-    console.log("filter_name", f.filter_name)
-    console.log("f", f)
-
+    // console.log("filter_name", f.filter_name)
+    // console.log("f", f)
     const filter_data = schemas.value.filters_dict[f.filter_name]
+
     const new_filter = {...filter_data, ...f}
     if (filter_data.category_group){
       // console.log("filter_data", filter_data)
@@ -166,7 +168,7 @@ function changeFilters() {
   }, [])
   // console.log("collection_filters", collection_filters)
   if (props.filter_group){
-    console.log("filter_group", props.filter_group)
+    // console.log("filter_group", props.filter_group)
     const fg = props.filter_group
     const new_filter_group = {
       ...props.filter_group,
@@ -177,14 +179,10 @@ function changeFilters() {
     collection_filters.push(new_filter_group)
   }
   const status_groups = collection_data.value.status_groups || []
-  // if (status_group)
-  //   collection_filters.push(status_filters[status_group])
   status_groups.forEach(sg => {
     collection_filters.push(status_filters[sg])
   })
 
-  // f => f.collection === current_collection.value)
-  // current_filters.value = group_filters.value.sort((a, b) => a.order - b.order)
   current_filters.value = collection_filters
 
   // console.log("group in changeFilters", group)
@@ -192,8 +190,8 @@ function changeFilters() {
     visible_filters.value = current_filters.value
   else
     visible_filters.value = current_filters.value.filter(f => !f.hidden)
-  console.log("visible_filters", visible_filters.value)
-  console.log("collection_data", collection_data.value)
+  // console.log("visible_filters", visible_filters.value)
+  // console.log("collection_data", collection_data.value)
 }
 
 function addItem() {
@@ -263,8 +261,9 @@ function selectItem(item) {
         class="d-flex mb-2 mt-0"
         :order="simplified_filters ? 1 : 'last'"
       >
+<!--          v-model="final_filters.q"-->
         <v-text-field
-          v-model="final_filters.q"
+          v-model="q_value"
           :label="`Buscar ${collection_data.name || 'elementos'}`"
           outlined
           density="comfortable"

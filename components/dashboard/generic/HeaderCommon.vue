@@ -83,7 +83,6 @@ const emits = defineEmits(['open-panel'])
       class="text-subtitle-1 mr-4"
       :style="`max-width: ${title_width + 10}px;`"
     >
-
       <div class="d-flex align-center">
         <slot name="title" class="d-flex">
           <div

@@ -229,7 +229,7 @@ export const useMainStore = defineStore('main', {
   actions: {
     setHeader() {
       const cookie_auth = useCookie('auth_dfi')
-      console.log("cookie_auth", cookie_auth)
+      // console.log("cookie_auth", cookie_auth)
       if (cookie_auth.value) {
         ApiService.defaults.headers.common['Authorization'] = `Token ${cookie_auth.value}`
       }
@@ -304,14 +304,45 @@ export const useMainStore = defineStore('main', {
         ;
       }
     },
-    async getQuery(id) {
-      this.setHeader()
+    async sendQuery([id, params]) {
       try {
-        let response = await ApiService.get(`search_query/${id}/search/`);
+        this.setHeader()
+        let response = await ApiService.post(`/search_query/${id}/search/`, params);
         return response.data
       } catch (error) {
         console.error(error)
         ;
+      }
+    },
+    async searchApplyQuery(id) {
+      try {
+        this.setHeader()
+        let response = await ApiService.get(`/apply_query/${id}/search/`);
+        return response.data
+      } catch (error) {
+        console.error(error)
+        ;
+      }
+    },
+    async savePreLink([id, data]) {
+      this.setHeader()
+      try {
+        let response = await ApiService.patch(`/note_link/${id}/get_note_content/`, data);
+        console.log("savePreLink", response.data)
+        return response.data
+      } catch (error) {
+        console.error(error);
+        return error.response.data
+      }
+    },
+    async getAdditionalInfo(id) {
+      this.setHeader()
+      try {
+        let response = await ApiService.get(`/note_content/${id}/additional_info/`);
+        console.log("getAdditionalInfo", response.data)
+        return response.data
+      } catch (error) {
+        console.error(error);
       }
     },
     async saveSimple([collection, data]) {
@@ -368,6 +399,7 @@ export const useMainStore = defineStore('main', {
     },
     async fetchElements([group, params]) {
       // console.log('fetchElements', group, params)
+      this.setHeader()
       try {
         const result = await ApiService.get(`/${group}/`, {params: params})
         // if (group.includes('catalogs/')){
@@ -394,6 +426,11 @@ export const useMainStore = defineStore('main', {
       })
       // console.log("status_dict", status_dict)
       return status_dict
+    },
+    foreign_origin(state) {
+      if (!state.cats)
+        return null
+      return state.cats.source_origins.find(so => so.name === 'Extranjera')
     },
   },
 })

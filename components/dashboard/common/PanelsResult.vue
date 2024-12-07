@@ -85,6 +85,7 @@ function closeDialog() {
 }
 
 function saveNewElement({res, is_new}) {
+  console.log("saveNewElement", res, is_new)
   if (is_new)
     props.results.unshift(res)
   else{

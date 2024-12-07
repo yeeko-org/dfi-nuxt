@@ -23,6 +23,7 @@ const props = defineProps({
   },
   is_display: Boolean,
   is_multiple: Boolean,
+  required: Boolean,
 })
 
 const text_value = computed(() => {
@@ -34,6 +35,13 @@ const text_value = computed(() => {
   }
   return props.items.find(
       item => item[props.item_value] === props.main_object[props.level_name])
+})
+
+const rules = computed(() => {
+  const rules = []
+  if (props.required)
+    rules.push(value => !!value || 'Campo requerido')
+  return rules
 })
 
 </script>
@@ -74,7 +82,17 @@ const text_value = computed(() => {
       >
         {{ text_value.icon }}
       </v-icon>
-      <span v-else>
+      <v-chip
+        v-else-if="text_value.color"
+        :color="text_value.color"
+        :prepend-icon="text_value.icon"
+        size="small"
+      >
+        {{text_value[item_title]}}
+      </v-chip>
+      <span
+        v-else
+      >
         {{text_value[item_title]}}
       </span>
     </template>
@@ -92,6 +110,7 @@ const text_value = computed(() => {
     :clearable="is_filter"
     :style="`max-width: ${main_width}px; min-width: ${main_width}px;`"
     :multiple="is_multiple"
+    :rules="rules"
   >
     <template #append-item>
       <v-icon

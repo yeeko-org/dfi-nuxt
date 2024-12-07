@@ -39,12 +39,15 @@ const props = defineProps({
           is_display
         />
       </v-card>
-      <span class="text-subtitle-1">
-        {{ main.main_word }}
+      <span class="text-subtitle-1 font-weight-bold">
+        {{ main.name }}
       </span>
     </template>
     <template #details>
-      ({{main.alternative_words}})
+      <div style="max-width: 400px;">
+
+        ({{main.query_words}})
+      </div>
     </template>
   </HeaderCommon>
 </template>

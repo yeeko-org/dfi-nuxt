@@ -27,6 +27,7 @@ const props = defineProps({
   width: Number,
   subtype_class: String,
   is_display: Boolean,
+  required: Boolean,
 })
 
 const emits = defineEmits(['delete-record'])
@@ -252,7 +253,7 @@ nextTick(() => {
 
 const subtype_key = computed(() => {
   const fields = collections.value.subtype.fields
-  console.log("fields", fields)
+  // console.log("fields", fields)
   const available_ids = ['id', 'key_name', 'name']
   return available_ids.find(id => fields.some(field => field.name === id))
 })
@@ -326,6 +327,7 @@ const main_width = computed(() => props.width || 250)
     :is_display="is_display"
     :is_multiple="category_is_multiple"
     :class="{'mr-2': !is_display}"
+    :required="required"
   />
   <GenericSelect
     v-if="subtype_items && level_names.subtype"
@@ -340,6 +342,7 @@ const main_width = computed(() => props.width || 250)
     :class="subtype_class"
     :is_multiple="subcategory_is_multiple"
     :label="collections.subtype[subcategory_is_multiple ? 'plural_name' : 'name']"
+    :required="required"
   />
 </template>
 

@@ -12,6 +12,15 @@ const props = defineProps({
     required: false,
     default: 'Fecha de la nota',
   },
+  hide_details: Boolean,
+  required: Boolean,
+})
+
+const rules = computed(() => {
+  const rules = []
+  if (props.required)
+    rules.push(value => !!value || 'Campo requerido')
+  return rules
 })
 
 const show_menu_date = ref(false)
@@ -53,8 +62,10 @@ function editDate(date) {
         readonly
         :label="label"
         variant="outlined"
-        class="ml-2"
+        class="mx-2"
+        :hide-details="hide_details"
         style="max-width: 180px;"
+        :rules="rules"
       >
       </v-text-field>
     </template>
@@ -72,5 +83,4 @@ function editDate(date) {
 </template>
 
 <style scoped>
-
 </style>
