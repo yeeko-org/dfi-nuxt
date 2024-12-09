@@ -5,10 +5,16 @@ import {saveElement} from "~/composables/save_elements.js";
 
 import {useMainStore} from "~/store/index.js";
 import {storeToRefs} from "pinia";
-import NoteContentEdit from "~/components/dashboard/news/note_content/NoteContentEdit.vue";
+import NoteContentSheet from "~/components/dashboard/note/note_content/NoteContentSheet.vue";
+import ScrapeableChip from "~/components/dashboard/source/source/ScrapeableChip.vue";
 const mainStore = useMainStore()
 const { savePreLink } = mainStore
-const { schemas, cats, foreign_origin } = storeToRefs(mainStore)
+const {
+  schemas,
+  cats,
+  foreign_origin,
+  invalid_valid_option
+} = storeToRefs(mainStore)
 
 const props = defineProps({
   is_massive_edit: Boolean,
@@ -49,7 +55,8 @@ async function sendLink(){
   const is_new = !Boolean(props.full_main[elem_id])
   const params = {
     "real_url": props.full_main.real_url,
-    "is_internal_dis": props.full_main.is_internal_dis,
+    // "is_internal_dis": props.full_main.is_internal_dis,
+    "valid_option": props.full_main.valid_option,
   }
   // console.log("params", params)
   savePreLink([props.full_main.id, params]).then(response => {
@@ -70,9 +77,11 @@ async function sendLink(){
 }
 
 const rule_link = computed(() => {
-  return props.full_main.is_internal_dis === 'invalid'
-    ? true
-    : Boolean(props.full_main.real_url) || 'Este campo es requerido'
+  // return props.full_main.is_internal_dis === 'invalid'
+  const is_invalid_option = props.full_main.valid_option === invalid_valid_option.value.id
+  return is_invalid_option
+    ? Boolean(props.full_main.real_url) || 'Se requiere el link final'
+    : true
 })
 
 const format_date = computed(() => {
@@ -85,7 +94,7 @@ const source_collection_data = computed(() => {
 
 // const changeNational = (value) => {
 const changeOrigin = (value) => {
-  console.log("changeOrigin", value)
+  // console.log("changeOrigin", value)
   // console.log("result.gnews_source", props.full_main.gnews_source)
   // // const gnews_source = props.full_main.gnews_source
   // console.log("result.source", props.full_main.source)
@@ -111,6 +120,14 @@ const show_dfi_buttons = computed(() => {
     || show_details
 })
 
+const show_actions = computed(() => {
+  // !full_main.note_contents?.length
+  // && full_main.is_internal_dis
+  // && full_main.is_internal_dis !== 'invalid'
+  return !props.full_main.note_contents?.length
+    && props.full_main.valid_option
+    && props.full_main.valid_option !== invalid_valid_option.value.id
+})
 
 </script>
 
@@ -145,7 +162,8 @@ const show_dfi_buttons = computed(() => {
               @update:model-value="changeOrigin"
             >
               <v-btn
-                v-for="choice in origin_choices"
+                _v-for="choice in origin_choices"
+                v-for="choice in cats.source_origins"
                 :key="choice.id"
                 :value="choice.id"
                 :color="choice.color"
@@ -155,7 +173,10 @@ const show_dfi_buttons = computed(() => {
                 {{choice.name}}
               </v-btn>
             </v-btn-toggle>
-
+            <ScrapeableChip
+              :main="full_main.source"
+              _is_icon
+            />
             <v-checkbox
               v-if="false"
               v-model="full_main.source.is_foreign"
@@ -202,6 +223,7 @@ const show_dfi_buttons = computed(() => {
             />
             <div class="d-flex flex-column ml-2">
               <v-input
+                v-if="false"
                 v-model="full_main.is_internal_dis"
                 label="Válido"
                 type="text"
@@ -243,6 +265,36 @@ const show_dfi_buttons = computed(() => {
                   </v-btn>
                 </v-btn-toggle>
               </v-input>
+              <v-input
+                v-if="true"
+                v-model="full_main.valid_option"
+                label="Válido"
+                type="text"
+                :rules="[rules.defined]"
+              >
+                <v-btn-toggle
+                  v-model="full_main.valid_option"
+                  :rules="[rules.defined]"
+                  variant="elevated"
+                  border
+                  divided
+                  color="grey-lighten-3"
+                  @update:model-value="sendLink"
+                >
+                  <v-btn
+                    v-for="option in cats.valid_options"
+                    :key="option.id"
+                    :color="option.color"
+                    size="small"
+                    :value="option.id"
+                    :prepend-icon="option.icon"
+                  >
+                    {{option.name}}
+
+                  </v-btn>
+
+                </v-btn-toggle>
+              </v-input>
               <span class="text-caption text-grey-darken-1">
                 Clasificación de Nota si es de Desplazamiento interno
               </span>
@@ -251,7 +303,7 @@ const show_dfi_buttons = computed(() => {
 
           </v-card-text>
           <v-card-actions
-            v-if="!full_main.note_contents?.length && full_main.is_internal_dis && full_main.is_internal_dis !== 'invalid'"
+            v-if="show_actions"
           >
             <v-spacer></v-spacer>
             <v-btn
@@ -279,7 +331,7 @@ const show_dfi_buttons = computed(() => {
           :key="note_content.id"
         >
           <v-row>
-            <NoteContentEdit
+            <NoteContentSheet
 
               :full_main="note_content"
             />

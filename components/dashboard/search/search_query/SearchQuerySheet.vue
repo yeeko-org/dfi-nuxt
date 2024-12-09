@@ -1,6 +1,6 @@
 <script setup>
 
-import CalendarDisplay from "~/components/dashboard/news/search_query/CalendarDisplay.vue";
+import CalendarDisplay from "~/components/dashboard/search/search_query/CalendarDisplay.vue";
 import PanelList from "~/components/dashboard/common/PanelList.vue";
 import {useMainStore} from "~/store/index.js";
 import {storeToRefs} from "pinia";

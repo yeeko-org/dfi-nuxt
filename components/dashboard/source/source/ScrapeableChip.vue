@@ -20,8 +20,12 @@ const text_scrapeable = computed(() => {
   return props.main.has_content
     ? 'Es scrapeable'
     : props.main.has_content === false
-      ? 'No es scrapeable'
+      ? `No es scrapeable \n ${props.is_icon ? props.main.scraper_message : ''}`
       : '??'
+})
+
+const tooltip_scrapeable = computed(() => {
+  return props.main.scraper_message || ''
 })
 
 </script>
@@ -39,7 +43,7 @@ const text_scrapeable = computed(() => {
     v-else
     :color="color_scrapeable"
     class="ml-3"
-    v-tooltip="text_scrapeable"
+    v-tooltip="tooltip_scrapeable"
   >
     {{ text_scrapeable }}
   </v-chip>

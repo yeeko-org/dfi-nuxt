@@ -13,14 +13,12 @@ const props = defineProps({
   full_main: Object,
   collection_data: Object,
   collection_name: String,
-  hide_actions: Boolean,
 })
 
 const saving = ref(false)
 const snackbar = ref(false)
 const editForm = ref(null)
-const edit_form = ref(false)
-const emits = defineEmits(['new-item', 'item-saved'])
+const emits = defineEmits(['new-item'])
 
 const final_collection_data = computed(() => {
   if (props.collection_data)
@@ -30,15 +28,13 @@ const final_collection_data = computed(() => {
 
 async function saveRecord() {
   const { valid } = await editForm.value.validate()
-  console.log('valid', valid)
-  if (!valid) return
   // emits('save-item', props.full_main)
+  if (!valid) return
   saving.value = true
   const elem_id = props.full_main.id ? 'id' : 'key_name'
   // console.log('props.full_main', props.full_main)
   const is_new = !Boolean(props.full_main[elem_id])
   saveElement(final_collection_data.value, props.full_main).then((res) => {
-    console.log('res', res)
     emits('item-saved', {res, is_new})
     snackbar.value = true
     saving.value = false
@@ -51,7 +47,6 @@ async function saveRecord() {
   <v-card class="mb-3 pa-3" elevation="8">
     <v-form
       ref="editForm"
-      v-model="edit_form"
     >
       <v-card-text
         class="d-flex flex-wrap"
@@ -92,6 +87,49 @@ async function saveRecord() {
             :final_collection_data="final_collection_data"
           />
         </v-col>
+        <v-col
+          v-if="final_collection_data.has.icon || final_collection_data.has.color"
+          cols="12"
+          class="d-flex pa-0"
+        >
+          <v-text-field
+            v-if="final_collection_data.has.icon"
+            v-model="full_main.icon"
+            label="Ícono (material icons)"
+            variant="outlined"
+            class="mx-2"
+            style="max-width: 200px;"
+          >
+            <template v-slot:append>
+              <v-btn
+                icon
+                href="https://fonts.google.com/icons"
+                target="_blank"
+              >
+                <v-icon>open_in_new</v-icon>
+              </v-btn>
+            </template>
+          </v-text-field>
+          <v-text-field
+            v-if="final_collection_data.has.color"
+            v-model="full_main.color"
+            label="Color"
+            variant="outlined"
+            class="mx-2"
+            style="max-width: 200px;"
+          >
+            <template v-slot:append>
+              <v-btn
+                icon
+                href="https://vuetifyjs.com/en/styles/colors/#material-colors"
+                target="_blank"
+              >
+                <v-icon>open_in_new</v-icon>
+              </v-btn>
+            </template>
+          </v-text-field>
+        </v-col>
+
         <slot name="edit" :full_main="full_main">
           EDICIÓN (REVISAR PORQUE NO ES NORMAL)
         </slot>
@@ -125,12 +163,9 @@ async function saveRecord() {
           </v-textarea>
         </v-col>
       </v-card-text>
-      <v-card-actions v-if="!hide_actions">
+      <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn
-          :id="`save_${final_collection_data.snake_name}-${
-            full_main.id || full_main.key_name || 'new'
-          }`"
           color="accent"
           variant="elevated"
           :loading="saving"
@@ -140,7 +175,6 @@ async function saveRecord() {
         </v-btn>
       </v-card-actions>
     </v-form>
-
     <v-snackbar
       v-model="snackbar"
       color="success"

@@ -4,12 +4,15 @@ import {useMainStore} from "~/store/index.js";
 const mainStore = useMainStore()
 
 const props = defineProps({
-  is_massive_edit: Boolean,
-  is_edit: Boolean,
   full_main: {
     type: Object,
     required: true,
   },
+  show_details: {
+    type: Boolean,
+    default: false,
+  },
+  collection_data: Object,
 })
 
 function getStructuredContent() {

@@ -3,7 +3,7 @@
 import HeaderCommon from "~/components/dashboard/generic/HeaderCommon.vue";
 import SelectGroup from "~/components/dashboard/common/SelectGroup.vue";
 import HeaderChip from "~/components/dashboard/common/HeaderChip.vue";
-import ScrapeableChip from "~/components/dashboard/news/source/ScrapeableChip.vue";
+import ScrapeableChip from "~/components/dashboard/source/source/ScrapeableChip.vue";
 
 const props = defineProps({
   main: {

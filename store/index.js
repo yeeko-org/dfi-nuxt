@@ -21,7 +21,8 @@ const calculateSchemas = (data) => {
       cl.filter_group === fg.key_name)
     return {...fg, ...fg.addl_config}
   })
-  const has_fields = ["comments", "description", "help_text", "order"]
+  const has_fields = [
+    "comments", "description", "help_text", "order", "color", "icon"]
   let collections = data.collections.map(coll => {
     coll.catalog_groups =  filter_groups.reduce((arr, new_fg) => {
       if (new_fg.main_collection !== coll.snake_name)
@@ -324,13 +325,21 @@ export const useMainStore = defineStore('main', {
         ;
       }
     },
+    edit_source_value(data) {
+      if (!data.source)
+        return
+      const index = this.cats.sources.findIndex(el => el.id === data.source.id)
+      this.cats.sources[index] = data.source
+    },
     async savePreLink([id, data]) {
       this.setHeader()
       try {
         let response = await ApiService.patch(`/note_link/${id}/get_note_content/`, data);
         console.log("savePreLink", response.data)
+        this.edit_source_value(response.data)
         return response.data
       } catch (error) {
+        this.edit_source_value(response.data)
         console.error(error);
         return error.response.data
       }
@@ -432,5 +441,10 @@ export const useMainStore = defineStore('main', {
         return null
       return state.cats.source_origins.find(so => so.name === 'Extranjera')
     },
+    invalid_valid_option(state) {
+      if (!state.cats)
+        return null
+      return state.cats.valid_options.find(vo => vo.name === 'Inválido')
+    }
   },
 })

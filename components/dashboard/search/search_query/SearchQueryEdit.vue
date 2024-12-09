@@ -1,15 +1,15 @@
 <script setup>
 
-import {useMainStore} from '~/store/index'
+import {useMainStore} from '~/store/index.js'
 import EditCommon from "~/components/dashboard/common/EditCommon.vue";
-import WordListEdit from "~/components/dashboard/news/word_list/WordListEdit.vue";
+import WordListEdit from "~/components/dashboard/search/word_list/WordListEdit.vue";
 const mainStore = useMainStore()
 const { cats, schemas } = storeToRefs(mainStore)
 const { sendQuery, saveSimple, searchApplyQuery } = mainStore
 import {example_response} from "~/composables/example.js";
 
 import SelectDate from "~/components/dashboard/common/SelectDate.vue";
-import NoteLinkEditFull from "~/components/dashboard/news/note_link/NoteLinkEditFull.vue";
+import NoteLinkEditFull from "~/components/dashboard/note/note_link/NoteLinkEditFull.vue";
 
 const props = defineProps({
   is_massive_edit: Boolean,
@@ -197,43 +197,56 @@ function updateDate(field, date) {
     </v-chip-group>
   </v-col>
   <v-col cols="12" class="d-flex pa-0 mt-6">
-    <v-textarea
-      v-model="full_main.query"
-      label="Consulta (generada automáticamente y solo lectura)"
-      readonly
-      rows="2"
-      auto-grow
-      class="mr-2"
-      variant="outlined"
-    />
+    <v-sheet
+      color="grey-lighten-4"
+      class="pa-2"
+      rounded="lg"
+      style="width: 100%;"
+    >
+      <div class="text-lime-darken-3 text-subtitle-1">
+        Consulta (generada automáticamente y solo lectura)
+      </div>
+      <span class="text-body-1">
+        {{full_main.query}}
+      </span>
+    </v-sheet>
   </v-col>
-  <v-col cxols="12" class="d-flex pa-0">
-    <v-switch
-      v-model="full_main.use_manual_query"
-      label="Usar consulta manual (en lugar de la automática)"
-      class="mr-2"
-      color="accent"
-    />
-<!--    <v-text-field-->
-<!--      v-model="full_main.manual_query"-->
-<!--      label="Consulta (manual)"-->
-<!--      class="mr-2"-->
-<!--      :disabled="!full_main.use_manual_query"-->
-<!--      rows="2"-->
-<!--      auto-grow-->
-<!--      variant="outlined"-->
-<!--      hide-details-->
+  <v-col cols="12" class="d-flex pa-0 mt-2">
+    <v-sheet
+      color="grey-lighten-4"
+      class="pa-2"
+      rounded="lg"
+      style="width: 100%;"
+    >
+      <div class="text-lime-darken-3 text-subtitle-1">
+        Palabras para excluir después de la consulta
+      </div>
+      <span class="text-body-1">
+        {{full_main.query_words_soft}}
+      </span>
+    </v-sheet>
   </v-col>
-  <v-col cols="12" class="d-flex pa-0">
-    <v-textarea
-      v-model="full_main.manual_query"
-      label="Consulta (manual)"
-      class="mr-2"
-      rows="2"
-      auto-grow
-      variant="outlined"
-      hide-details
-    />
+  <v-col cols="12" class="pa-0 my-3">
+    <v-card variant="outlined" class="pa-3 d-flex" color="secondary">
+
+      <v-switch
+        v-model="full_main.use_manual_query"
+        label="Usar consulta manual (en lugar de la automática)"
+        class="mr-2"
+        color="accent"
+      />
+      <v-textarea
+        v-model="full_main.manual_query"
+        label="Consulta (manual)"
+        class="mr-2"
+        color="black"
+        bg-color="white"
+        rows="2"
+        auto-grow
+        variant="outlined"
+        hide-details
+      />
+    </v-card>
   </v-col>
   <v-col cols="6" class="mb-2 pl-0">
     <v-card

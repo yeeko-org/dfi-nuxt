@@ -4,6 +4,7 @@ import HeaderCommon from "~/components/dashboard/generic/HeaderCommon.vue";
 import {useMainStore} from "~/store/index.js";
 import {storeToRefs} from "pinia";
 import SelectGroup from "~/components/dashboard/common/SelectGroup.vue";
+import ScrapeableChip from "~/components/dashboard/source/source/ScrapeableChip.vue";
 const mainStore = useMainStore()
 const { cats, foreign_origin, all_nodes } = storeToRefs(mainStore)
 const props = defineProps({
@@ -15,45 +16,31 @@ const props = defineProps({
   },
 })
 
-
-const internal_dis_options = [
-  {
-    value: 'unknown',
-    text: 'No estoy seguro',
-    icon: 'help',
-    color: 'lime'
-  },
-  {
-    value: 'valid',
-    text: 'Es válido',
-    icon: 'check',
-    color: 'success'
-  },
-  {
-    value: 'invalid',
-    text: 'No es válido',
-    icon: 'close',
-    color: 'error'
-  },
-]
+const node_source = computed(() => {
+  if (props.main.source){
+    return all_nodes.value.sources.find(
+      d => d.id === `subtype_${props.main.source}`)
+  }
+  return null
+})
 
 const dont_need = computed(() => {
-  const node = all_nodes.value.sources.find(
-    d => d.id === `subtype_${props.main.source}`)
-  // console.log("node", node)
-  if (node){
 
-    console.log("node", node)
-    return node.parent.data.name === 'Extranjera'
+  if (node_source.value){
+    // console.log("node", node)
+    return node_source.value.parent.data.name === 'Extranjera'
   }
   else
     return false
-  // return 2
-
 })
 
-const internal_dis_obj = computed(() => {
-  return internal_dis_options.find((opt) => opt.value === props.main.is_internal_dis)
+const final_main = computed(() => {
+  if (typeof props.main.source === 'object') {
+    return {
+      source: props.main.source.id,
+    }
+  }
+  return props.main
 })
 
 </script>
@@ -68,15 +55,13 @@ const internal_dis_obj = computed(() => {
 <!--      <div style="max-width: 400px;" v-if="dfi_obj">-->
       <div style="max-width: 400px;" class="d-flex">
         <div>
-          <v-chip
-            v-if="internal_dis_obj"
-            :color="internal_dis_obj.color"
-            class="mr-2"
-            size="small"
-            :prepend-icon="internal_dis_obj.icon"
-          >
-            {{ internal_dis_obj.text }}
-          </v-chip>
+          <SelectGroup
+            v-if="main.valid_option"
+            filter_group_name="valid_options"
+            :main_object="main"
+            main_collection_name="note_link"
+            is_display
+          />
           <v-chip
             v-else-if="dont_need"
             class="mr-2"
@@ -101,11 +86,16 @@ const internal_dis_obj = computed(() => {
         <div class="d-flex align-center">
           <SelectGroup
             filter_group_name="sources"
-            :main_object="main"
+            :main_object="final_main"
             main_collection_name="source"
             is_display
           />
         </div>
+        <ScrapeableChip
+          v-if="node_source"
+          :main="node_source.data"
+          is_icon
+        />
 
       </div>
     </template>

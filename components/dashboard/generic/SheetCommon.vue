@@ -3,6 +3,7 @@
 import {useMainStore} from "~/store/index.js";
 import {storeToRefs} from "pinia";
 import PanelList from "~/components/dashboard/common/PanelList.vue";
+import PanelsResult from "~/components/dashboard/common/PanelsResult.vue";
 
 const mainStore = useMainStore()
 const { schemas } = storeToRefs(mainStore)
@@ -18,6 +19,8 @@ const props = defineProps({
   },
   collection_data: Object,
 })
+
+const final_filters = ref({page: 1, page_size: 40})
 
 const child_collections = computed(() => {
   if (!props.collection_data)
@@ -47,6 +50,10 @@ const child_collections = computed(() => {
   return result
 })
 
+// const final_filters = computed(() => {
+//   return {}
+// })
+
 </script>
 
 <template>
@@ -70,6 +77,13 @@ const child_collections = computed(() => {
         :collection_data="child_collection.collection_data"
         :show_details="show_details"
       />
+<!--      <PanelsResult-->
+<!--        :results="child_collection.results"-->
+<!--        :collection_data="child_collection.collection_data"-->
+<!--        :show_details="show_details"-->
+<!--        :final_filters="final_filters"-->
+<!--        :total_count="child_collection.results.length"-->
+<!--      />-->
     </v-card-text>
   </v-card>
 </template>
