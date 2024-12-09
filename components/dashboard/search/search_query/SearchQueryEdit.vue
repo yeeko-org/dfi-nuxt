@@ -5,11 +5,6 @@ import EditCommon from "~/components/dashboard/common/EditCommon.vue";
 import WordListEdit from "~/components/dashboard/search/word_list/WordListEdit.vue";
 const mainStore = useMainStore()
 const { cats, schemas } = storeToRefs(mainStore)
-const { sendQuery, saveSimple, searchApplyQuery } = mainStore
-import {example_response} from "~/composables/example.js";
-
-import SelectDate from "~/components/dashboard/common/SelectDate.vue";
-import NoteLinkEditFull from "~/components/dashboard/note/note_link/NoteLinkEditFull.vue";
 
 const props = defineProps({
   is_massive_edit: Boolean,
@@ -22,23 +17,11 @@ const props = defineProps({
 
 const words = ["main_words", "complementary_words", "negative_words"]
 
-const test_query = ref({
-  when: 1,
-  from_date: null,
-  to_date: null,
-})
-const new_apply_query = ref({
-  when: null,
-  from_date: null,
-  to_date: null,
-})
 const dialog_edit = ref(false)
 const element_to_edit = ref(null)
+const cluster_in_edit = ref(null)
 // const new_apply_query = ref(null)
 const edit_type = ref(null)
-const result_links = ref([])
-const search_count = ref(0)
-const exist_links_count = ref(0)
 
 const main_word_lists = computed(() => {
   return cats.value.clusters.map(cluster => {
@@ -52,56 +35,22 @@ const collection_data_word_list = computed(() => {
   return schemas.value.collections_dict['word_list']
 })
 
-function saveQuery() {
-  const btn_save_id = `save_search_query-${props.full_main.id}`
-  const el = document.getElementById(btn_save_id)
-  el.click()
-}
+const total_words = computed(() => {
+  const patterns = [/ AND /g, / OR /g];
+  const text = props.full_main.query || '';
+  return patterns.reduce((acc, pattern) => {
+    return acc + (text.match(pattern) || []).length;
+  }, 1);
+})
 
-function saveApplyQuery(send_search=false) {
-  const data = {
-    from_date: new_apply_query.value.from_date,
-    to_date: new_apply_query.value.to_date,
-    search_query: props.full_main.id,
-  }
-  saveSimple(['apply_query', data]).then(response => {
-    console.log("response saveApplyQuery", response)
-    new_apply_query.value = response
-    props.full_main.apply_queries.push(response)
-    if (send_search)
-      sendApplyQuery(response.id)
-  })
-}
-
-function sendApplyQuery(apply_query_id) {
-  searchApplyQuery(apply_query_id).then(response => {
-    // console.log("sendApplyQuery", response)
-    result_links.value = response.note_links
-    search_count.value = response.search_count
-    exist_links_count.value = response.exist_links_count
-    // new_apply_query.value = response
-  })
-}
-
-
-function searchQuery() {
-  // console.log("searchQuery")
-  saveQuery()
-  if (test_query.when === 1){
-    result_links.value = example_response
-    search_count.value = example_response.length
-    exist_links_count.value = 0
-    return
-  }
-  setTimeout(() => {
-    sendQuery([props.full_main.id, test_query.value]).then(response => {
-      console.log("response", response)
-      result_links.value = response.note_links
-      search_count.value = response.search_count
-      exist_links_count.value = response.exist_links_count
-    })
-  }, 300)
-}
+const counter_color = computed(() => {
+  if (total_words.value > 13)
+    return 'error'
+  else if (total_words.value > 10)
+    return 'warning'
+  else
+    return 'success'
+})
 
 function editWordList(word_list) {
   element_to_edit.value = word_list
@@ -114,6 +63,7 @@ function addWordList(cluster) {
   element_to_edit.value = {
     cluster: cluster.id,
   }
+  cluster_in_edit.value = cluster
   edit_type.value = {key: 'add', title: 'Nueva lista de palabras'}
   dialog_edit.value = true
   console.log("addWordList", cluster)
@@ -121,11 +71,19 @@ function addWordList(cluster) {
 
 function saveNewElement({res, is_new}) {
   console.log("saveNewElement", res, is_new)
+  // const word_index = words.indexOf(cluster_in_edit.value.name)
+  // props.full_main[cluster_in_edit.value.name
+  if (is_new){
+    const cluster_word = words[cluster_in_edit.value.order - 1]
+    if (!props.full_main[cluster_word])
+      props.full_main[cluster_word] = []
+    // console.log("full_main", props.full_main)
+    // console.log("cluster_in_edit", cluster_in_edit.value)
+    props.full_main[cluster_word].push(res.id)
+  }
   dialog_edit.value = false
-}
-
-function updateDate(field, date) {
-  test_query.value[field] = date
+  element_to_edit.value = null
+  cluster_in_edit.value = null
 }
 
 
@@ -196,168 +154,75 @@ function updateDate(field, date) {
       </v-btn>
     </v-chip-group>
   </v-col>
-  <v-col cols="12" class="d-flex pa-0 mt-6">
-    <v-sheet
-      color="grey-lighten-4"
-      class="pa-2"
-      rounded="lg"
-      style="width: 100%;"
-    >
-      <div class="text-lime-darken-3 text-subtitle-1">
-        Consulta (generada automáticamente y solo lectura)
-      </div>
-      <span class="text-body-1">
-        {{full_main.query}}
-      </span>
-    </v-sheet>
-  </v-col>
-  <v-col cols="12" class="d-flex pa-0 mt-2">
-    <v-sheet
-      color="grey-lighten-4"
-      class="pa-2"
-      rounded="lg"
-      style="width: 100%;"
-    >
-      <div class="text-lime-darken-3 text-subtitle-1">
-        Palabras para excluir después de la consulta
-      </div>
-      <span class="text-body-1">
-        {{full_main.query_words_soft}}
-      </span>
-    </v-sheet>
-  </v-col>
-  <v-col cols="12" class="pa-0 my-3">
-    <v-card variant="outlined" class="pa-3 d-flex" color="secondary">
-
-      <v-switch
-        v-model="full_main.use_manual_query"
-        label="Usar consulta manual (en lugar de la automática)"
-        class="mr-2"
-        color="accent"
-      />
-      <v-textarea
-        v-model="full_main.manual_query"
-        label="Consulta (manual)"
-        class="mr-2"
-        color="black"
-        bg-color="white"
-        rows="2"
-        auto-grow
-        variant="outlined"
-        hide-details
-      />
-    </v-card>
-  </v-col>
-  <v-col cols="6" class="mb-2 pl-0">
-    <v-card
-      variant="outlined"
-      class="pa-2 d-flex align-center"
-      color="accent"
-    >
-      <v-row>
-        <v-col>
-          Expermienta con la consulta
-        </v-col>
-        <v-col cols="12" class="d-flex">
-
-          <v-text-field
-            v-model="test_query.when"
-            label="Días atrás"
-            class="mr-2"
-            type="number"
-            variant="outlined"
-            style="max-width: 100px;"
-            hide-details
-            suffix="días"
-          >
-          </v-text-field>
-          <v-btn
-            color="accent"
-            variant="outlined"
-            @click="searchQuery"
-            class="ml-3"
-          >
-            Traer muestra
-          </v-btn>
-          <v-spacer></v-spacer>
-          <v-btn
-            color="accent"
-            variant="tonal"
-            class="ml-2"
-            @click="saveQuery"
-          >
-            Guardar
-          </v-btn>
-        </v-col>
-      </v-row>
-    </v-card>
-
-  </v-col>
-  <v-col cols="6" class="mb-2 pl-0">
-    <v-card
-      variant="outlined"
-      class="pa-2 d-flex align-center"
-      color="accent"
-    >
-
-      <v-row>
-        <v-col>
-          Una vez definidas las palabras, busca y guarda noticias
-        </v-col>
-        <v-col cols="12" class="d-flex">
-          <SelectDate
-            :init_date="new_apply_query.from_date"
-            label="Desde"
-            class="mr-2"
-            hide_details
-            @update-date="new_apply_query.from_date = $event"
-            required
-          />
-          <SelectDate
-            :init_date="new_apply_query.to_date"
-            label="Hasta"
-            class="mr-2"
-            hide_details
-            @update-date="new_apply_query.to_date = $event"
-            required
-          />
-          <v-spacer></v-spacer>
-          <v-btn
-            color="accent"
-            variant="elevated"
-            @click="saveApplyQuery(true)"
-          >
-            Traer noticias
-          </v-btn>
-        </v-col>
-      </v-row>
-
-    </v-card>
-  </v-col>
-<!--  <v-col cols="12" class="d-flex pa-0 mt-6" >-->
-  <v-card
-    class="pa-2"
-    color="purple-lighten-4"
-    v-if="search_count"
-    style="width: 100%;"
-  >
-    <v-card-title class="text-h6 title-no-wrap">
-<!--      {{search_count}} notas ({{exist_links_count}} previamente guardadas)-->
-      {{search_count}} links a notas
-    </v-card-title>
-    <v-card-text>
-      <v-row
-        style="max-width: 100%;"
+  <template v-if="full_main.id">
+    <v-col cols="12" class="d-flex pa-0 mt-6">
+      <v-sheet
+        color="grey-lighten-4"
+        class="pa-2"
+        rounded="lg"
+        style="width: 100%;"
       >
-        <NoteLinkEditFull
-          v-for="link in result_links"
-          :key="link.gnews_id"
-          :full_main="link"
+        <div class="text-lime-darken-3 text-subtitle-1">
+          Consulta
+          <span
+            class="font-weight-bold"
+            :class="`text-${counter_color}`"
+          >
+            ({{total_words}}/13 palabras)
+          </span>
+          <v-icon
+            v-if="total_words > 13"
+            color="error"
+            class="ml-2"
+            v-tooltip="'Demasiadas palabras, máximo 13'"
+          >
+            warning
+          </v-icon>
+        </div>
+        <span class="text-body-1">
+          {{full_main.query}}
+        </span>
+      </v-sheet>
+    </v-col>
+    <v-col cols="12" class="d-flex pa-0 mt-2">
+      <v-sheet
+        color="grey-lighten-4"
+        class="pa-2"
+        rounded="lg"
+        style="width: 100%;"
+      >
+        <div class="text-lime-darken-3 text-subtitle-1">
+          Palabras para excluir después de la consulta
+        </div>
+        <span class="text-body-1">
+          {{full_main.query_words_soft}}
+        </span>
+      </v-sheet>
+    </v-col>
+    <v-col cols="12" class="pa-0 my-3">
+      <v-card variant="outlined" class="pa-3 d-flex" color="secondary">
+
+        <v-switch
+          v-model="full_main.use_manual_query"
+          label="Usar consulta manual (en lugar de la automática)"
+          class="mr-2"
+          color="accent"
         />
-      </v-row>
-    </v-card-text>
-    </v-card>
-<!--  </v-col>-->
+        <v-textarea
+          v-model="full_main.manual_query"
+          label="Consulta (manual)"
+          class="mr-2"
+          color="black"
+          bg-color="white"
+          rows="2"
+          auto-grow
+          variant="outlined"
+          hide-details
+        />
+      </v-card>
+    </v-col>
+
+  </template>
   <v-dialog
     v-model="dialog_edit"
     max-width="980"

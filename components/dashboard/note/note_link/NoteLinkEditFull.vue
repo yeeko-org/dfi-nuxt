@@ -7,10 +7,10 @@ import {useMainStore} from "~/store/index.js";
 import {storeToRefs} from "pinia";
 import NoteContentSheet from "~/components/dashboard/note/note_content/NoteContentSheet.vue";
 import ScrapeableChip from "~/components/dashboard/source/source/ScrapeableChip.vue";
+import SourceDetail from "~/components/dashboard/source/source/SourceDetail.vue";
 const mainStore = useMainStore()
 const { savePreLink } = mainStore
 const {
-  schemas,
   cats,
   foreign_origin,
   invalid_valid_option
@@ -23,21 +23,15 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  is_test: Boolean,
 })
 
 const linkForm = ref(null)
 // const note_content = ref(false)
 const show_details = ref(false)
-const saving_source = ref(false)
 const sending_link = ref(false)
 const snackbar = ref(false)
 const errors = ref(null)
-
-const origin_choices = computed(() => {
-  return cats.value.source_origins.filter(
-    origin => origin.name !== 'Desconocido'
-  )
-})
 
 const emits = defineEmits(['item-saved'])
 
@@ -47,6 +41,7 @@ const rules = ref({
 })
 
 async function sendLink(){
+  errors.value = null
   const { valid } = await linkForm.value.validate()
   if (!valid) return
   sending_link.value = true
@@ -88,45 +83,26 @@ const format_date = computed(() => {
   return dayjs(props.full_main.published_at).format("DD/MM/YY")
 })
 
-const source_collection_data = computed(() => {
-  return schemas.value.collections_dict['source']
-})
-
-// const changeNational = (value) => {
-const changeOrigin = (value) => {
-  // console.log("changeOrigin", value)
-  // console.log("result.gnews_source", props.full_main.gnews_source)
-  // // const gnews_source = props.full_main.gnews_source
-  // console.log("result.source", props.full_main.source)
-  const params = {
-    // ...{"main_url": gnews_source.href, "name": gnews_source.title},
-    ...props.full_main.source,
-    source_origin: value,
-    // national: value,
-  }
-  saveElement(source_collection_data.value, params).then((res) => {
-    // console.log('res', res)
-    // emits('item-saved', {res, is_new})
-    snackbar.value = true
-    saving_source.value = false
-  })
-}
-
 const show_dfi_buttons = computed(() => {
   // full_main.id && (full_main.source.national !== 'For' || show_details)
   const foreign_id = foreign_origin.value.id
-  return props.full_main.id
-    && props.full_main.source.source_origin !== foreign_id
+  return (props.full_main.id
+    && props.full_main.source.source_origin !== foreign_id)
     || show_details
 })
 
 const show_actions = computed(() => {
-  // !full_main.note_contents?.length
-  // && full_main.is_internal_dis
-  // && full_main.is_internal_dis !== 'invalid'
   return !props.full_main.note_contents?.length
     && props.full_main.valid_option
     && props.full_main.valid_option !== invalid_valid_option.value.id
+})
+
+const node_source = computed(() => {
+  if (props.source_id){
+    return all_nodes.value.sources.find(
+      d => d.id === `subtype_${props.source_id}`)
+  }
+  return null
 })
 
 </script>
@@ -143,52 +119,16 @@ const show_actions = computed(() => {
           <span class="text-grey-darken-2 text-caption mr-3">
             {{format_date}}
           </span>
-          <template v-if="full_main.source">
-            <span class="text-cyan-darken-2 text-subtitle-1 mr-2 font-weight-bold">
-              {{full_main.source.name}}
-            </span>
-            <span class="text-black text-caption">
-              ({{full_main.source.main_url}})
-            </span>
-            <v-btn-toggle
-              v-if="full_main.id"
-              v-model="full_main.source.source_origin"
-              color="accent"
-              class="ml-2"
-              border
-              divided
-              density="compact"
-              variant="elevated"
-              @update:model-value="changeOrigin"
-            >
-              <v-btn
-                _v-for="choice in origin_choices"
-                v-for="choice in cats.source_origins"
-                :key="choice.id"
-                :value="choice.id"
-                :color="choice.color"
-                :loading="saving_source"
-                size="small"
-              >
-                {{choice.name}}
-              </v-btn>
-            </v-btn-toggle>
-            <ScrapeableChip
-              :main="full_main.source"
-              _is_icon
-            />
-            <v-checkbox
-              v-if="false"
-              v-model="full_main.source.is_foreign"
-              label="Extranjero"
-              class="ml-2 text-black"
-              base-color="black"
-              color="accent"
-              hide-details
-              variant="elevated"
-              indeterminate
-            />
-          </template>
+          <SourceDetail
+            v-if="full_main.id"
+            :source_id="full_main.source"
+          />
+          <SourceDetail
+            v-else
+            :pre_source="full_main.source_full"
+            is_test
+          />
+<!--          <SourceD-->
         </v-card-subtitle>
         <v-card-title class="pt-0">
           <span class="title-no-wrap">
@@ -208,9 +148,10 @@ const show_actions = computed(() => {
           </v-btn>
         </v-card-title>
         <template
-          v-if="show_dfi_buttons"
+          v-if="full_main.id && show_dfi_buttons"
         >
           <v-card-text
+            v-if="show_dfi_buttons"
             class="d-flex justify-space-between"
           >
             <v-text-field
@@ -223,50 +164,6 @@ const show_actions = computed(() => {
             />
             <div class="d-flex flex-column ml-2">
               <v-input
-                v-if="false"
-                v-model="full_main.is_internal_dis"
-                label="Válido"
-                type="text"
-                :rules="[rules.defined]"
-              >
-                <v-btn-toggle
-                  v-model="full_main.is_internal_dis"
-                  :rules="[rules.defined]"
-                  variant="elevated"
-                  border
-                  divided
-                  color="grey-lighten-3"
-                  @update:model-value="sendLink"
-                >
-                  <v-btn
-                    color="success"
-                    size="small"
-                    value="valid"
-                    prepend-icon="check"
-                  >
-                    Es válida
-                  </v-btn>
-                  <v-btn
-                    color="error"
-                    size="small"
-                    value="invalid"
-                    prepend-icon="close"
-                  >
-                    No es válida
-                  </v-btn>
-                  <v-btn
-                    color="lime"
-                    size="small"
-                    value="unknown"
-                    variant="outlined"
-                    prepend-icon="help"
-                  >
-                    No estoy seguro
-                  </v-btn>
-                </v-btn-toggle>
-              </v-input>
-              <v-input
-                v-if="true"
                 v-model="full_main.valid_option"
                 label="Válido"
                 type="text"

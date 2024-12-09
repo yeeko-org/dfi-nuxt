@@ -19,6 +19,7 @@ const saving = ref(false)
 const snackbar = ref(false)
 const editForm = ref(null)
 const emits = defineEmits(['new-item'])
+const errors = ref(null)
 
 const final_collection_data = computed(() => {
   if (props.collection_data)
@@ -27,6 +28,7 @@ const final_collection_data = computed(() => {
 })
 
 async function saveRecord() {
+  errors.value = null
   const { valid } = await editForm.value.validate()
   // emits('save-item', props.full_main)
   if (!valid) return
@@ -35,6 +37,11 @@ async function saveRecord() {
   // console.log('props.full_main', props.full_main)
   const is_new = !Boolean(props.full_main[elem_id])
   saveElement(final_collection_data.value, props.full_main).then((res) => {
+    if (res.errors) {
+      errors.value = res.errors
+      saving.value = false
+      return
+    }
     emits('item-saved', {res, is_new})
     snackbar.value = true
     saving.value = false
@@ -45,6 +52,16 @@ async function saveRecord() {
 
 <template>
   <v-card class="mb-3 pa-3" elevation="8">
+    <v-alert
+      v-if="errors"
+      type="error"
+      dismissible
+      border="left"
+      elevation="2"
+      class="mb-3"
+    >
+      {{ errors }}
+    </v-alert>
     <v-form
       ref="editForm"
     >

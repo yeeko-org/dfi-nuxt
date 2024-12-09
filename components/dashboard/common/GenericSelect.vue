@@ -26,7 +26,7 @@ const props = defineProps({
   required: Boolean,
 })
 
-const text_value = computed(() => {
+const final_value = computed(() => {
   if (props.is_multiple){
     // console.log("is_multiple", props.main_object[props.level_name])
     return props.main_object[props.level_name].map(
@@ -34,7 +34,7 @@ const text_value = computed(() => {
             item2 => item2[props.item_value] === item1))
   }
   return props.items.find(
-      item => item[props.item_value] === props.main_object[props.level_name])
+    item => item[props.item_value] === props.main_object[props.level_name])
 })
 
 const rules = computed(() => {
@@ -52,10 +52,10 @@ const rules = computed(() => {
     class="mr-0 px-2"
     style="border-right: 1px solid #e0e0e0; border-bottom: 1px solid #e0e0e0;"
   >
-    <template v-if="text_value && is_multiple">
+    <template v-if="final_value && is_multiple">
       <template v-if="level === 'group'">
         <v-icon
-          v-for="item in text_value"
+          v-for="item in final_value"
           class="mr-1"
           :color="item.color || 'primary'"
           v-tooltip="item[item_title]"
@@ -65,7 +65,7 @@ const rules = computed(() => {
       </template>
       <div v-else>
         <div
-          v-for="item in text_value"
+          v-for="item in final_value"
           class="mr-1"
         >
           {{ item[item_title] }}
@@ -73,31 +73,31 @@ const rules = computed(() => {
       </div>
     </template>
 
-    <template v-else-if="text_value">
+    <template v-else-if="final_value">
       <v-icon
-        v-if="level === 'group' && text_value.icon"
+        v-if="level === 'group' && final_value.icon"
         class="mr-1"
-        :color="text_value.color || 'primary'"
-        v-tooltip="text_value[item_title]"
+        :color="final_value.color || 'primary'"
+        v-tooltip="final_value[item_title]"
       >
-        {{ text_value.icon }}
+        {{ final_value.icon }}
       </v-icon>
       <v-chip
-        v-else-if="text_value.color"
-        :color="text_value.color"
-        :prepend-icon="text_value.icon"
+        v-else-if="final_value.color"
+        :color="final_value.color"
+        :prepend-icon="final_value.icon"
         size="small"
       >
-        {{text_value[item_title]}}
+        {{final_value[item_title]}}
       </v-chip>
       <span
         v-else
       >
-        {{text_value[item_title]}}
+        {{final_value[item_title]}}
       </span>
     </template>
     <span v-else>
-      ?
+      !?
     </span>
   </div>
   <v-select

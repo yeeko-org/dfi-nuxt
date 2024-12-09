@@ -25,7 +25,6 @@ const node_source = computed(() => {
 })
 
 const dont_need = computed(() => {
-
   if (node_source.value){
     // console.log("node", node)
     return node_source.value.parent.data.name === 'Extranjera'
@@ -55,32 +54,54 @@ const final_main = computed(() => {
 <!--      <div style="max-width: 400px;" v-if="dfi_obj">-->
       <div style="max-width: 400px;" class="d-flex">
         <div>
-          <SelectGroup
-            v-if="main.valid_option"
-            filter_group_name="valid_options"
-            :main_object="main"
-            main_collection_name="note_link"
-            is_display
-          />
-          <v-chip
-            v-else-if="dont_need"
-            class="mr-2"
-            size="small"
-            color="grey"
-            label
-          >
-            No necesario
-          </v-chip>
-          <v-chip
-            v-else
-            class="mr-2"
-            size="small"
-            color="warning"
-            label
-            prepend-icon="warning"
-          >
-            No clasificado
-          </v-chip>
+          <v-card :variant="dont_need ? 'text' : 'outlined'" color="accent">
+            <SelectGroup
+              v-if="main.valid_option"
+              filter_group_name="valid_options"
+              :main_object="main"
+              main_collection_name="note_link"
+              is_display
+            />
+            <v-chip
+              v-else-if="dont_need"
+              class="mr-2"
+              size="small"
+              color="grey"
+              label
+            >
+              No necesario
+            </v-chip>
+            <v-chip
+              v-else
+              class="mr-2"
+              size="small"
+              color="warning"
+              label
+              prepend-icon="warning"
+            >
+              No clasificado
+            </v-chip>
+          </v-card>
+          <div v-if="!dont_need" class="mt-1">
+            <SelectGroup
+              v-if="main.pre_valid_option"
+              filter_group_name="valid_options"
+              :main_object="main"
+              main_collection_name="note_link"
+              field="pre_valid_option"
+              is_display
+            />
+            <v-chip
+              v-else
+              class="mr-2"
+              size="small"
+              color="warning"
+              label
+              prepend-icon="warning"
+            >
+              No clasificado
+            </v-chip>
+          </div>
         </div>
 
         <div class="d-flex align-center">

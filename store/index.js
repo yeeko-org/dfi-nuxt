@@ -89,121 +89,127 @@ const calculateSchemas = (data) => {
   }
 }
 
-const calculateNewCats = (data, schemas) => {
+
+const calculateNewCats = (data, filter_groups) => {
   let all_nodes = {}
-  schemas.filter_groups.forEach(fg => {
-    if (fg.key_name === 'geographicals')
-      return
-    const is_multiple = fg.links.some(l => l.is_multiple)
-    // console.log("filter_group:", fg.key_name, is_multiple)
-    // v-else-if="!filter_box.category_group && !filter_box.category_type"
-    const subtype_key = fg.category_subtype
-    const type_key = fg.category_type
-    const group_key = fg.category_group
-    let subtypes = data[`${subtype_key}s`] || data[subtype_key]
-    if (subtype_key === 'country')
-      subtypes = data.countries
-    let types = data[`${type_key}s`] || []
-    let groups = data[`${group_key}s`] || []
-    let root = {
-      new_id: "root",
-      parent: null,
-      name: "root",
-    }
-    root = {...root, ...fg}
-    let new_types = []
-    let types_dict = {}
-    // console.log("subtype_key", subtype_key)
-    // console.log("type_key", type_key)
-    // console.log("group_key", group_key)
-    // console.log("subtypes", subtypes)
-    subtypes = subtypes.map(st => {
-      if (is_multiple){
-        let all_types = st[`${type_key}s`]
-        all_types.forEach(t => {
-          if (!types_dict[t])
-            types_dict[t] = []
-          types_dict[t].push(st)
-        })
-        if (all_types.length === 1)
-          st.parent_id = `type_${all_types[0]}`
-        else{
-          const first_type = types.find(t => t.id === all_types[0])
-          let new_type_key = ''
-          if (!first_type){
-            new_type_key = 'other'
+  filter_groups.forEach(fg => {
+    const value = calculateFilterGroup(data, fg)
+    if (value)
+      all_nodes[fg.key_name] = value
+  })
+  return all_nodes
+}
+
+const calculateFilterGroup = (data, fg) => {
+  if (fg.key_name === 'geographicals')
+    return
+  const is_multiple = fg.links.some(l => l.is_multiple)
+  // console.log("filter_group:", fg.key_name, is_multiple)
+  // v-else-if="!filter_box.category_group && !filter_box.category_type"
+  const subtype_key = fg.category_subtype
+  const type_key = fg.category_type
+  const group_key = fg.category_group
+  let subtypes = data[`${subtype_key}s`] || data[subtype_key]
+  if (subtype_key === 'country')
+    subtypes = data.countries
+  let types = data[`${type_key}s`] || []
+  let groups = data[`${group_key}s`] || []
+  let root = {
+    new_id: "root",
+    parent: null,
+    name: "root",
+  }
+  root = {...root, ...fg}
+  let new_types = []
+  let types_dict = {}
+  // console.log("subtype_key", subtype_key)
+  // console.log("type_key", type_key)
+  // console.log("group_key", group_key)
+  // console.log("subtypes", subtypes)
+  subtypes = subtypes.map(st => {
+    if (is_multiple){
+      let all_types = st[`${type_key}s`]
+      all_types.forEach(t => {
+        if (!types_dict[t])
+          types_dict[t] = []
+        types_dict[t].push(st)
+      })
+      if (all_types.length === 1)
+        st.parent_id = `type_${all_types[0]}`
+      else{
+        const first_type = types.find(t => t.id === all_types[0])
+        let new_type_key = ''
+        if (!first_type){
+          new_type_key = 'other'
+        }
+        else if (group_key)
+          new_type_key = first_type[`${group_key}`]
+        const join_id = all_types.join('_')
+        const names = all_types.map(t =>
+          types.find(tt => tt.id === t).name)
+        st.parent_id = `type_${join_id}`
+        if (!new_types.find(t => t.id === join_id)){
+          let new_type = {
+            id: join_id,
+            name: `Mixto: ${names ? names.join(', ') : 'desconocidos'}`,
+            original_types: all_types.map(t =>
+              types.find(tt => tt.id === t)),
+            parent_id: `type_${all_types[0]}`,
+            new_id: `type_${join_id}`,
+            color: "black",
+            icon: "group_work",
+            is_mix: true,
           }
-          else if (group_key)
-            new_type_key = first_type[`${group_key}`]
-          const join_id = all_types.join('_')
-          const names = all_types.map(t =>
-            types.find(tt => tt.id === t).name)
-          st.parent_id = `type_${join_id}`
-          if (!new_types.find(t => t.id === join_id)){
-            let new_type = {
-              id: join_id,
-              name: `Mixto: ${names ? names.join(', ') : 'desconocidos'}`,
-              original_types: all_types.map(t =>
-                types.find(tt => tt.id === t)),
-              parent_id: `type_${all_types[0]}`,
-              new_id: `type_${join_id}`,
-              color: "black",
-              icon: "group_work",
-              is_mix: true,
-            }
-            if (group_key)
-              new_type[group_key] = new_type_key
-            new_types.push(new_type)
-          }
+          if (group_key)
+            new_type[group_key] = new_type_key
+          new_types.push(new_type)
         }
       }
-      else{
-        const value = st[type_key]
-        st.parent_id = type_key ? `type_${value}` : "root"
-      }
-      st.new_id = `subtype_${st.id}`
-      return st
-    })
-    types = [...types, ...new_types]
-    types = types.map(t => {
-      if (group_key && !t[group_key]) {
-        console.log("No group key", t)
-      }
-      t.parent_id = group_key ? `group_${t[group_key]}` : "root"
-      t.new_id = `type_${t.id}`
-      if (is_multiple)
-        t.all_childs = types_dict[t.id]
-      return t
-    })
-    groups = groups.map(g => {
-      g.parent_id = "root"
-      g.new_id = `group_${g.id}`
-      return g
-    })
-    const all_data = [...subtypes, ...types, ...groups, root]
-    console.log("all_data", all_data)
-    try{
-      all_nodes[fg.key_name] = d3.stratify()
-        .id(d => d.new_id)
-        .parentId(d => d.parent_id)
-        (all_data)
-      // find id 'subtype_1' and get all children
-      // console.log("new_cats", new_cats[fg.key_name].find(d => d.id === 'subtype_1').descendants())
     }
-    catch (e){
-      console.log("Error", e)
-      console.log("all_data", all_data)
-      console.log("subtype_key", subtype_key)
-      console.log("type_key", type_key)
-      console.log("group_key", group_key)
-
-      console.log("subtypes", subtypes)
-      console.log("types", types)
-      console.log("groups", groups)
+    else{
+      const value = st[type_key]
+      st.parent_id = type_key ? `type_${value}` : "root"
     }
+    st.new_id = `subtype_${st.id}`
+    return st
   })
-  // console.log("new_cats", all_nodes)
-  return all_nodes
+  types = [...types, ...new_types]
+  types = types.map(t => {
+    if (group_key && !t[group_key]) {
+      console.log("No group key", t)
+    }
+    t.parent_id = group_key ? `group_${t[group_key]}` : "root"
+    t.new_id = `type_${t.id}`
+    if (is_multiple)
+      t.all_childs = types_dict[t.id]
+    return t
+  })
+  groups = groups.map(g => {
+    g.parent_id = "root"
+    g.new_id = `group_${g.id}`
+    return g
+  })
+  const all_data = [...subtypes, ...types, ...groups, root]
+  // console.log("all_data", all_data)
+  try{
+    return d3.stratify()
+      .id(d => d.new_id)
+      .parentId(d => d.parent_id)
+      (all_data)
+    // find id 'subtype_1' and get all children
+    // console.log("new_cats", new_cats[fg.key_name].find(d => d.id === 'subtype_1').descendants())
+  }
+  catch (e){
+    console.log("Error", e)
+    console.log("all_data", all_data)
+    console.log("subtype_key", subtype_key)
+    console.log("type_key", type_key)
+    console.log("group_key", group_key)
+    console.log("subtypes", subtypes)
+    console.log("types", types)
+    console.log("groups", groups)
+    return null
+  }
 }
 
 function getLastId(data) {
@@ -265,7 +271,8 @@ export const useMainStore = defineStore('main', {
             this.cats = data
             this.schemas = calculateSchemas(data)
             // console.log("schemas", this.schemas)
-            this.all_nodes = calculateNewCats(data, this.schemas)
+            this.all_nodes = calculateNewCats(
+              data, this.schemas.filter_groups)
             this.status = calculate_status(data.status_control)
             this.setCollectionData()
             this.setFilterGroupData()
@@ -305,10 +312,17 @@ export const useMainStore = defineStore('main', {
         ;
       }
     },
+    appendNewSources(response) {
+      // const new_sources = response.data.new_sources
+      this.cats.sources = response.data.all_sources
+      this.all_nodes['sources'] = calculateFilterGroup(
+        this.cats, this.schemas.filters_dict.sources)
+    },
     async sendQuery([id, params]) {
       try {
         this.setHeader()
         let response = await ApiService.post(`/search_query/${id}/search/`, params);
+        this.appendNewSources(response)
         return response.data
       } catch (error) {
         console.error(error)
@@ -319,6 +333,7 @@ export const useMainStore = defineStore('main', {
       try {
         this.setHeader()
         let response = await ApiService.get(`/apply_query/${id}/search/`);
+        this.appendNewSources(response)
         return response.data
       } catch (error) {
         console.error(error)
@@ -330,17 +345,19 @@ export const useMainStore = defineStore('main', {
         return
       const index = this.cats.sources.findIndex(el => el.id === data.source.id)
       this.cats.sources[index] = data.source
+      this.all_nodes['sources'] = calculateFilterGroup(
+        this.cats, this.schemas.filters_dict.sources)
     },
     async savePreLink([id, data]) {
       this.setHeader()
       try {
         let response = await ApiService.patch(`/note_link/${id}/get_note_content/`, data);
-        console.log("savePreLink", response.data)
+        // console.log("savePreLink", response.data)
         this.edit_source_value(response.data)
         return response.data
       } catch (error) {
-        this.edit_source_value(response.data)
         console.error(error);
+        this.edit_source_value(error.response.data)
         return error.response.data
       }
     },
@@ -348,7 +365,7 @@ export const useMainStore = defineStore('main', {
       this.setHeader()
       try {
         let response = await ApiService.get(`/note_content/${id}/additional_info/`);
-        console.log("getAdditionalInfo", response.data)
+        // console.log("getAdditionalInfo", response.data)
         return response.data
       } catch (error) {
         console.error(error);
@@ -362,9 +379,11 @@ export const useMainStore = defineStore('main', {
         return response.data
       } catch (error) {
         console.error(error);
+        return {errors: error.response.data}
       }
     },
     async saveCatalog([collection_data, data]) {
+      // console.log("collection_data", collection_data)
       this.setHeader()
       const { method, last_id } = getLastId(data)
       const collection = collection_data.snake_name
@@ -382,9 +401,15 @@ export const useMainStore = defineStore('main', {
             el => el[elem_id] === response.data[elem_id])
           this.cats[real_group][index] = response.data
         }
+        const filter_group = this.schemas.filter_groups.find(
+          fg => fg[collection_data.level] === collection)
+        this.all_nodes[filter_group.key_name] = calculateFilterGroup(
+          this.cats, filter_group)
+        // this.calculateNewNodes(filter_group, response.data)
         return response.data
       } catch (error) {
         console.error(error);
+        return {errors: error.response.data}
       }
     },
     async patchSimple([collection, id, data]) {
