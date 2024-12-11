@@ -147,6 +147,15 @@ function initFilters() {
   let collection_filters = all_filters.reduce((arr, f) => {
     // console.log("filter_name", f.filter_name)
     // console.log("f", f)
+    if (!f.filter_name){
+      console.log("custom_filter", f)
+      let custom_filter = {
+        is_custom: true,
+        order: 12,
+      }
+      arr.push({...f, ...custom_filter})
+      return arr
+    }
     const filter_data = schemas.value.filters_dict[f.filter_name]
 
     const new_filter = {...filter_data, ...f}

@@ -82,7 +82,7 @@ async function saveRecord() {
           <v-text-field
             v-if="final_collection_data.name_field"
             v-model="full_main[final_collection_data.name_field]"
-            label="Nombre"
+            :label="final_collection_data.name_field"
             class="mr-2"
             variant="outlined"
             style="width: 300px;"

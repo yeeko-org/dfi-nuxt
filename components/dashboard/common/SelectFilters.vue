@@ -1,6 +1,6 @@
 <script setup>
 import StatusDetail from "@/components/dashboard/status/StatusDetail";
-
+import TripleBooleanFilter from "~/components/dashboard/custom_filters/TripleBooleanFilter.vue";
 import SelectGroup from "~/components/dashboard/common/SelectGroup.vue";
 
 const props = defineProps({
@@ -36,7 +36,6 @@ const applyFilters = () => {
       @change-status="applyFilters"
       is_filter
     />
-
     <SelectGroup
       v-else-if="filter_box.key_name"
       :filter_group_name="filter_box.key_name"
@@ -44,6 +43,15 @@ const applyFilters = () => {
       :category_group_value="filter_box.category_group_value"
       :forced_level="filter_box.forced_level"
       is_filter
+      :filter_null="filter_box.filter_null"
+      :filter_multiple="filter_box.is_multiple"
+    />
+    <TripleBooleanFilter
+      v-else-if="filter_box.component && filter_box.component === 'TripleBooleanFilter'"
+      :final_filters="final_filters"
+      :field="filter_box.field"
+      :label="filter_box.title"
+      @apply-filters="applyFilters"
     />
     <h5 v-else>{{filter_box.title || filter_box.name}}</h5>
   </v-col>

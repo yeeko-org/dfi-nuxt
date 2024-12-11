@@ -7,7 +7,11 @@ const props = defineProps({
   },
   level: String,
   level_name: String,
+
   is_filter: Boolean,
+  filter_null: Boolean,
+  filter_multiple: Boolean,
+
   main_width: Number,
   item_value: {
     type: String,
@@ -112,11 +116,26 @@ const rules = computed(() => {
     :multiple="is_multiple"
     :rules="rules"
   >
-    <template #append-item>
+    <template #append-item v-if="!is_filter">
       <v-icon
         color="primary"
         icon="trip_origin"
       ></v-icon>
+    </template>
+    <template #append-item v-else-if="filter_null">
+      <v-list-item
+        title="Filtrar vacíos"
+        @click="main_object[`${level_name}_null`] = true"
+      >
+        <template v-slot:prepend v-if="true">
+          <v-icon
+            class="mr-n3"
+            :color="'grey'"
+            :icon="'circle'"
+          ></v-icon>
+        </template>
+      </v-list-item>
+
     </template>
     <template #item="{ item, props: {onClick, title, value} }">
       <v-list-item

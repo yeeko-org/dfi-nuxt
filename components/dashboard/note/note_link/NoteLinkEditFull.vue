@@ -8,10 +8,14 @@ import {storeToRefs} from "pinia";
 import NoteContentSheet from "~/components/dashboard/note/note_content/NoteContentSheet.vue";
 import ScrapeableChip from "~/components/dashboard/source/source/ScrapeableChip.vue";
 import SourceDetail from "~/components/dashboard/source/source/SourceDetail.vue";
+import WordListEdit from "~/components/dashboard/search/word_list/WordListEdit.vue";
+import EditCommon from "~/components/dashboard/common/EditCommon.vue";
+import NoteContentEdit from "~/components/dashboard/note/note_content/NoteContentEdit.vue";
 const mainStore = useMainStore()
 const { savePreLink } = mainStore
 const {
   cats,
+  schemas,
   foreign_origin,
   invalid_valid_option
 } = storeToRefs(mainStore)
@@ -33,11 +37,19 @@ const sending_link = ref(false)
 const snackbar = ref(false)
 const errors = ref(null)
 
+const dialog_edit = ref(false)
+const element_to_edit = ref({})
+
 const emits = defineEmits(['item-saved'])
 
 const rules = ref({
   required: value => !!value || "Campo requerido",
   defined: value => value !== undefined || "Debes seleccionar una opción",
+})
+
+
+const collection_data_note_content = computed(() => {
+  return schemas.value.collections_dict['note_content']
 })
 
 async function sendLink(){
@@ -97,13 +109,22 @@ const show_actions = computed(() => {
     && props.full_main.valid_option !== invalid_valid_option.value.id
 })
 
-const node_source = computed(() => {
-  if (props.source_id){
-    return all_nodes.value.sources.find(
-      d => d.id === `subtype_${props.source_id}`)
+function addNoteContent(){
+  dialog_edit.value = true
+  element_to_edit.value = {
+    note_link: props.full_main.id,
+    title: props.full_main.title,
+    source: props.full_main.source,
   }
-  return null
-})
+}
+
+function saveNewElement({res, is_new}) {
+  console.log("saveNewElement", res, is_new)
+  dialog_edit.value = false
+  element_to_edit.value = null
+  if (is_new)
+    props.full_main.note_contents.push(res)
+}
 
 </script>
 
@@ -202,6 +223,14 @@ const node_source = computed(() => {
           <v-card-actions
             v-if="show_actions"
           >
+            <v-btn
+              color="accent"
+              variant="outlined"
+              @click="addNoteContent"
+              :loading="sending_link"
+            >
+              Crear contenido manualmente
+            </v-btn>
             <v-spacer></v-spacer>
             <v-btn
               color="accent"
@@ -223,29 +252,12 @@ const node_source = computed(() => {
           </span>
 
         </v-alert>
-        <div
-          v-for="note_content in full_main.note_contents"
-          :key="note_content.id"
-        >
-          <v-row>
-            <NoteContentSheet
 
-              :full_main="note_content"
-            />
-          </v-row>
-          <v-card
-            v-if="false"
-            variant="outlined"
-          >
-            <v-card-title>
-              Nota guardada
-            </v-card-title>
-            <v-card-text>
-              <span v-html="note_content.content_full">
-              </span>
-            </v-card-text>
-          </v-card>
-        </div>
+<!--        <NoteContentSheet-->
+<!--          v-for="note_content in full_main.note_contents"-->
+<!--          :key="note_content.id"-->
+<!--          :full_main="note_content"-->
+<!--        />-->
       </v-card>
     </v-form>
     <v-snackbar
@@ -265,6 +277,28 @@ const node_source = computed(() => {
         </v-btn>
       </template>
     </v-snackbar>
+    <v-dialog
+      v-model="dialog_edit"
+      max-width="950"
+      scrollable
+    >
+      <v-card v-if="element_to_edit">
+        <v-card-title>
+          Crear contenido de nota
+        </v-card-title>
+        <EditCommon
+          :full_main="element_to_edit"
+          :collection_data="collection_data_note_content"
+          @item-saved="saveNewElement"
+        >
+          <template v-slot:edit="{ full_main }">
+            <NoteContentEdit
+              :full_main="element_to_edit"
+            />
+          </template>
+        </EditCommon>
+      </v-card>
+    </v-dialog>
   </v-col>
 
 </template>

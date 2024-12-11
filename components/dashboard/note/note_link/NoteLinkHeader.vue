@@ -111,12 +111,12 @@ const final_main = computed(() => {
             main_collection_name="source"
             is_display
           />
+          <ScrapeableChip
+            v-if="node_source"
+            :main="node_source.data"
+            is_icon
+          />
         </div>
-        <ScrapeableChip
-          v-if="node_source"
-          :main="node_source.data"
-          is_icon
-        />
 
       </div>
     </template>

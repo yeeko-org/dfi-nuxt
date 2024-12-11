@@ -62,14 +62,20 @@ const child_collections = computed(() => {
     :key="child_collection.relation.id"
     class="mb-4"
   >
-    <v-card-title>
+    <v-card-title class="d-flex">
       {{ child_collection.collection_data.plural_name }}
-      <span v-if="child_collection.results">
+      <span v-if="child_collection.results" class="ml-2">
         ({{ child_collection.results.length }})
       </span>
       <span v-else class="text-error">
         Sin data heredada!!
       </span>
+      <v-spacer></v-spacer>
+      <v-btn
+        v-if="false"
+      >
+        Agregar
+      </v-btn>
     </v-card-title>
     <v-card-text v-if="child_collection.results">
       <PanelList

@@ -23,6 +23,9 @@ const props = defineProps({
   forced_level: String,
 
   is_filter: Boolean,
+  filter_null: Boolean,
+  filter_multiple: Boolean,
+
   is_toolbar: Boolean,
   width: Number,
   subtype_class: String,
@@ -224,12 +227,6 @@ const display_type = computed(() => {
     ? (props.main_object[level_names.value.type] || type_items.value)
     : true
 })
-const display_indirect_type = computed(() => {
-  if (props.is_filter)
-    return false
-  return props.main_object[level_names.value.type] === undefined
-})
-
 
 nextTick(() => {
   setTimeout(() => {
@@ -328,6 +325,8 @@ const main_width = computed(() => props.width || 250)
     :is_multiple="category_is_multiple"
     :class="{'mr-2': !is_display}"
     :required="required"
+    :filter_null="filter_null"
+    :filter_multiple="filter_multiple"
   />
   <GenericSelect
     v-if="subtype_items && level_names.subtype"
@@ -343,6 +342,8 @@ const main_width = computed(() => props.width || 250)
     :is_multiple="subcategory_is_multiple"
     :label="collections.subtype[subcategory_is_multiple ? 'plural_name' : 'name']"
     :required="required"
+    :filter_null="filter_null"
+    :filter_multiple="filter_multiple"
   />
 </template>
 

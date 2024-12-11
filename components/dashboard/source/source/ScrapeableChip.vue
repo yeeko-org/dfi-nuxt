@@ -21,7 +21,7 @@ const text_scrapeable = computed(() => {
     ? 'Es scrapeable'
     : props.main.has_content === false
       ? `No es scrapeable \n ${props.is_icon ? props.main.scraper_message : ''}`
-      : '??'
+      : 'Sin intentos'
 })
 
 const tooltip_scrapeable = computed(() => {
