@@ -66,11 +66,11 @@ function addWordList(cluster) {
   cluster_in_edit.value = cluster
   edit_type.value = {key: 'add', title: 'Nueva lista de palabras'}
   dialog_edit.value = true
-  console.log("addWordList", cluster)
+  // console.log("addWordList", cluster)
 }
 
 function saveNewElement({res, is_new}) {
-  console.log("saveNewElement", res, is_new)
+  // console.log("saveNewElement", res, is_new)
   // const word_index = words.indexOf(cluster_in_edit.value.name)
   // props.full_main[cluster_in_edit.value.name
   if (is_new){
@@ -80,10 +80,20 @@ function saveNewElement({res, is_new}) {
     // console.log("full_main", props.full_main)
     // console.log("cluster_in_edit", cluster_in_edit.value)
     props.full_main[cluster_word].push(res.id)
+    saveSearchQuery()
   }
   dialog_edit.value = false
   element_to_edit.value = null
   cluster_in_edit.value = null
+}
+
+function saveSearchQuery() {
+  if (!props.full_main.id)
+    return
+  const save_id = `save_search_query-${props.full_main.id}`
+  document.getElementById(save_id).click()
+  // const word_index = words.indexOf(value.name)
+  // props.full_main[value.name] = value.value
 }
 
 
@@ -112,8 +122,12 @@ function saveNewElement({res, is_new}) {
       column
       multiple
       selected-class="font-weight-bold text-accent"
+      @update:model-value="saveSearchQuery"
     >
-      <div v-for="word_list in cluster.word_lists" :key="word_list.id">
+      <div
+        v-for="word_list in cluster.word_lists"
+        :key="word_list.id"
+      >
         <v-chip
           :value="word_list.id"
           filter
@@ -139,9 +153,6 @@ function saveNewElement({res, is_new}) {
         >
           <v-icon>edit</v-icon>
         </v-btn>
-<!--        <span class="mr-2">-->
-<!--          edit-->
-<!--        </span>-->
       </div>
       <v-btn
         @click="addWordList(cluster)"

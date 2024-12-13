@@ -48,6 +48,15 @@ const rules = computed(() => {
   return rules
 })
 
+function disabledNull(){
+  props.main_object[`${props.level_name}_null`] = null
+}
+
+function sendNull(){
+  props.main_object[props.level_name] = null
+  props.main_object[`${props.level_name}_null`] = true
+}
+
 </script>
 
 <template>
@@ -113,8 +122,9 @@ const rules = computed(() => {
     :variant="is_filter ? 'underlined' : 'outlined'"
     :clearable="is_filter"
     :style="`max-width: ${main_width}px; min-width: ${main_width}px;`"
-    :multiple="is_multiple"
+    :multiple="is_multiple || filter_multiple"
     :rules="rules"
+    @update:model-value="disabledNull"
   >
     <template #append-item v-if="!is_filter">
       <v-icon
@@ -125,7 +135,7 @@ const rules = computed(() => {
     <template #append-item v-else-if="filter_null">
       <v-list-item
         title="Filtrar vacíos"
-        @click="main_object[`${level_name}_null`] = true"
+        @click="sendNull"
       >
         <template v-slot:prepend v-if="true">
           <v-icon

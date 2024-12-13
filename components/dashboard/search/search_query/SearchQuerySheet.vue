@@ -8,7 +8,7 @@ import SelectDate from "~/components/dashboard/common/SelectDate.vue";
 import {example_response} from "~/composables/example.js";
 import NoteLinkEditFull from "~/components/dashboard/note/note_link/NoteLinkEditFull.vue";
 const mainStore = useMainStore()
-const { schemas } = storeToRefs(mainStore)
+const { schemas, cats, foreign_origin } = storeToRefs(mainStore)
 const { sendQuery, saveSimple, searchApplyQuery } = mainStore
 
 const props = defineProps({
@@ -21,9 +21,11 @@ const props = defineProps({
 })
 
 const result_links = ref([])
+const final_result_links = ref({valid: [], foreign: []})
 const is_test = ref(false)
 const loading = ref(false)
 const search_count = ref(0)
+const show_foreign = ref(false)
 const exist_links_count = ref(0)
 
 const test_query = ref({
@@ -43,18 +45,17 @@ const apply_query_collection = computed(() => {
 
 function searchQuery() {
   is_test.value = true
-  // if (test_query.when === 1){
-  //   result_links.value = example_response
-  //   search_count.value = example_response.length
-  //   exist_links_count.value = 0
-  //   return
-  // }
+  loading.value = true
+  final_result_links.value.foreign = []
+  final_result_links.value.valid = []
   setTimeout(() => {
     sendQuery([props.full_main.id, test_query.value]).then(response => {
       console.log("response", response)
       result_links.value = response.note_links
+      final_result_links.value.valid = response.note_links
       search_count.value = response.search_count
       exist_links_count.value = response.exist_links_count
+      loading.value = false
     })
   }, 300)
 }
@@ -66,6 +67,8 @@ function saveApplyQuery(send_search=false) {
   search_count.value = 0
   exist_links_count.value = 0
   result_links.value = []
+  final_result_links.value.valid = []
+  final_result_links.value.foreign = []
   const data = {
     from_date: new_apply_query.value.from_date,
     to_date: new_apply_query.value.to_date,
@@ -84,19 +87,22 @@ function sendApplyQuery(apply_query_id) {
   searchApplyQuery(apply_query_id).then(response => {
     // console.log("sendApplyQuery", response)
     result_links.value = response.note_links
+    const foreign_id = foreign_origin.value.id
+    final_result_links.value = response.note_links.reduce((acc, link) => {
+      const source_obj = response.all_sources.find(
+        source => source.id === link.source)
+      if (source_obj.source_origin === foreign_id)
+        acc.foreign.push(link)
+      else
+        acc.valid.push(link)
+      return acc
+    }, {valid: [], foreign: []})
     search_count.value = response.search_count
     exist_links_count.value = response.exist_links_count
     loading.value = false
     // new_apply_query.value = response
   })
 }
-
-
-// function saveQuery() {
-//   const btn_save_id = `save_search_query-${props.full_main.id}`
-//   const el = document.getElementById(btn_save_id)
-//   el.click()
-// }
 
 </script>
 
@@ -139,6 +145,7 @@ function sendApplyQuery(apply_query_id) {
                 variant="outlined"
                 @click="searchQuery"
                 class="ml-3"
+                :loading="loading"
               >
                 Traer muestra
               </v-btn>
@@ -163,7 +170,6 @@ function sendApplyQuery(apply_query_id) {
                 :init_date="new_apply_query.from_date"
                 label="Desde"
                 class="mr-2"
-                hide_details
                 @update-date="new_apply_query.from_date = $event"
                 required
               />
@@ -171,7 +177,6 @@ function sendApplyQuery(apply_query_id) {
                 :init_date="new_apply_query.to_date"
                 label="Hasta"
                 class="mr-2"
-                hide_details
                 @update-date="new_apply_query.to_date = $event"
                 required
               />
@@ -198,14 +203,43 @@ function sendApplyQuery(apply_query_id) {
     >
       <v-card-title class="text-h6 title-no-wrap">
   <!--      {{search_count}} notas ({{exist_links_count}} previamente guardadas)-->
-        {{search_count}} links a notas
+        {{search_count}} links a notas ({{final_result_links.valid.length}} válidos)
       </v-card-title>
       <v-card-text>
         <v-row
           style="max-width: 100%;"
+          v-if="final_result_links.foreign.length"
+        >
+          <v-col cols="12" class="px-0">
+            <v-card color="orange-lighten-4 pa-2">
+              <v-card-title class="text-h6 d-flex">
+                Notas extranjeras encontradas ({{final_result_links.foreign.length}})
+                <v-spacer></v-spacer>
+                <v-btn
+                  icon
+                  @click="show_foreign = !show_foreign"
+                >
+                  <v-icon>{{show_foreign ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}}</v-icon>
+                </v-btn>
+              </v-card-title>
+              <template
+                v-if="show_foreign"
+              >
+                <NoteLinkEditFull
+                  v-for="link in final_result_links.foreign"
+                  :key="link.gnews_id"
+                  :full_main="link"
+                  :is_test="is_test"
+                />
+              </template>
+            </v-card>
+          </v-col>
+        </v-row>
+        <v-row
+          style="max-width: 100%;"
         >
           <NoteLinkEditFull
-            v-for="link in result_links"
+            v-for="link in final_result_links.valid"
             :key="link.gnews_id"
             :full_main="link"
             :is_test="is_test"

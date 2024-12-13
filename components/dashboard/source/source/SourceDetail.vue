@@ -30,7 +30,7 @@ const source_collection_data = computed(() => {
 })
 
 const full_source = computed(() => {
-  console.log("node_source", node_source.value)
+  // console.log("node_source", node_source.value)
   return props.pre_source || node_source.value?.data || {}
 })
 
@@ -44,7 +44,7 @@ const node_source = computed(() => {
 
 // const changeNational = (value) => {
 const changeOrigin = (value) => {
-  console.log("changeOrigin", value)
+  // console.log("changeOrigin", value)
   // console.log("result.gnews_source", props.full_main.gnews_source)
   // // const gnews_source = props.full_main.gnews_source
   // console.log("result.source", props.full_main.source)

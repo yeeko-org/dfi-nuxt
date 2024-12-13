@@ -182,7 +182,7 @@ const subtype_items = computed(() => {
     }
   }
   else{
-    console.log("filter_node", filter_node.value)
+    // console.log("filter_node", filter_node.value)
     return filter_node.value.children.map(child => child.data)
   }
   return null

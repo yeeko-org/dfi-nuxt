@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import ApiService from "./common";
 import colorMixin from "~/mixins/colorMixin";
 // import { mande } from 'mande'
+import qs from 'qs';
 import * as d3 from 'd3';
 
 const calculate_status = (status_control) => {
@@ -263,7 +264,7 @@ export const useMainStore = defineStore('main', {
         this.current_collection]
     },
     fetchCatalogs() {
-      console.log("fetchCatalogs init")
+      // console.log("fetchCatalogs init")
       return new Promise((resolve) => {
         ApiService.get('/catalogs/all/')
           .then(({data}) => {
@@ -435,7 +436,12 @@ export const useMainStore = defineStore('main', {
       // console.log('fetchElements', group, params)
       this.setHeader()
       try {
-        const result = await ApiService.get(`/${group}/`, {params: params})
+        const result = await ApiService.get(`/${group}/`, {
+          params: params,
+          paramsSerializer: params => {
+            return qs.stringify(params, {arrayFormat: 'comma'})
+          }
+        })
         // if (group.includes('catalogs/')){
         //   const real_group = group.split('/')[1]
         // }

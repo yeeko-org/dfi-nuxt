@@ -16,14 +16,14 @@ const props = defineProps({
 
       {{ full_main.from_date }} --> {{ full_main.to_date }}
     </v-card-title>
-    <v-card-text v-if="full_main.has_error">
-      <v-alert v-if="full_main.has_error" type="error">
-        <span
+    <v-card-text v-if="full_main.has_errors">
+      <v-alert v-if="full_main.has_errors" type="error">
+        <div
           v-for="(error, index) in full_main.errors"
           :key="index"
         >
           -{{ error }}
-        </span>
+        </div>
       </v-alert>
       <v-code>
         {{ full_main.last_feed }}

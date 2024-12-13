@@ -184,6 +184,9 @@ async function saveRecord() {
         <v-spacer></v-spacer>
         <v-btn
           color="accent"
+          :id="`save_${final_collection_data.snake_name}-${
+            full_main.id || full_main.key_name || 'new'
+          }`"
           variant="elevated"
           :loading="saving"
           @click="saveRecord"

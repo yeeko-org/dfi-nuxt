@@ -34,7 +34,6 @@ const loading_fetch = ref(false)
 const show_details = ref(false)
 const total_count = ref(0)
 const final_filters = ref({
-  page: 1,
   ordering: null,
   q: "",
   page_size: 40,
@@ -89,14 +88,20 @@ const debounceApplyFilters = _debounce(() => {
   applyFilters()
 }, 800)
 
-function applyFilters() {
+function applyFilters(page=null) {
+  if (page === null){
+    page = 1
+
+    // console.log("childRef", childRef)
+    childRef.value.resetPage()
+  }
   loading_fetch.value = true
   show_details.value = false
   let collection_name = collection_data.value.snake_name
   if (is_category.value)
     collection_name = `catalogs/${collection_name}`
   results.value = []
-  const params = {...final_filters.value, q: q_value.value}
+  const params = {...final_filters.value, q: q_value.value, page: page}
   fetchElements([collection_name, params]).then(res => {
     loading_fetch.value = false
     if (!res.results){
@@ -123,7 +128,6 @@ function resetFilters() {
   if (!is_category.value && !collection_data.value.cat_params?.init_display)
     temp_reset.value = true
   final_filters.value = {
-    page: 1,
     ordering: null,
     q: "",
     page_size: 40,
@@ -337,6 +341,7 @@ function selectItem(item) {
       :collection_data="collection_data"
       :show_details="show_details"
       :final_filters="final_filters"
+      @update-page-number="applyFilters($event)"
       :total_count="total_count"
       :is_mini="is_mini"
       ref="childRef"

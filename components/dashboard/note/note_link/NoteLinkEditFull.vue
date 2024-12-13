@@ -183,7 +183,27 @@ function saveNewElement({res, is_new}) {
               :rules="[rule_link]"
               style="max-width: 600px;"
             />
-            <div class="d-flex flex-column ml-2">
+            <div class="d-flex flex-column ml-2 justify-center">
+              <v-btn-toggle
+                v-model="full_main.pre_valid_option"
+                variant="elevated"
+                color="grey-lighten-4"
+                style="margin-left: 2px;"
+                class="mb-n2"
+                density="compact"
+              >
+                <v-btn
+                  v-for="option in cats.valid_options"
+                  :key="option.id"
+                  :color="option.color"
+                  class="text-caption"
+                  :value="option.id"
+                  :prepend-icon="option.icon"
+                  disabled
+                >
+                  {{option.name}}
+                </v-btn>
+              </v-btn-toggle>
               <v-input
                 v-model="full_main.valid_option"
                 label="Válido"
@@ -203,9 +223,9 @@ function saveNewElement({res, is_new}) {
                     v-for="option in cats.valid_options"
                     :key="option.id"
                     :color="option.color"
-                    size="small"
                     :value="option.id"
                     :prepend-icon="option.icon"
+                    class="text-caption"
                   >
                     {{option.name}}
 

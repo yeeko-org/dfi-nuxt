@@ -24,10 +24,11 @@ const edit_type = ref({key: 'add', title: 'Agregar registro'})
 const dialog_edit = ref(false)
 const element_to_edit = ref(null)
 const selected_results = ref([])
+const page_number = ref(1)
 
 const edit_component = shallowRef('')
-defineExpose({ addItem })
-const emits = defineEmits(['select-item'])
+defineExpose({ addItem, resetPage })
+const emits = defineEmits(['select-item', 'update-page-number'])
 
 const route_key = computed(() => props.collection_data.app_label)
 const snake_name = computed(() => props.collection_data.snake_name)
@@ -102,6 +103,10 @@ function selectItem(item) {
 const all_selected = computed(() => {
   return props.results.length === sel.value.selected_elems.length
 })
+
+function resetPage() {
+  page_number.value = 1
+}
 
 </script>
 
@@ -200,10 +205,11 @@ const all_selected = computed(() => {
 <!--    />-->
     <v-card-actions>
       <v-pagination
-        v-model="final_filters.page"
+        v-model="page_number"
         :length="Math.ceil(total_count / final_filters.page_size)"
         :total-visible="11"
         rounded="circle"
+        @update:model-value="emits('update-page-number', $event)"
       ></v-pagination>
     </v-card-actions>
   </v-card>
