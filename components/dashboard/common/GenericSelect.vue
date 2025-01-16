@@ -121,6 +121,7 @@ function sendNull(){
     :item-value="item_value"
     :variant="is_filter ? 'underlined' : 'outlined'"
     :clearable="is_filter"
+    :hide-details="is_filter"
     :style="`max-width: ${main_width}px; min-width: ${main_width}px;`"
     :multiple="is_multiple || filter_multiple"
     :rules="rules"

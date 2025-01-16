@@ -91,9 +91,8 @@ const debounceApplyFilters = _debounce(() => {
 function applyFilters(page=null) {
   if (page === null){
     page = 1
-
-    // console.log("childRef", childRef)
-    childRef.value.resetPage()
+    if (childRef.value)
+      childRef.value.resetPage()
   }
   loading_fetch.value = true
   show_details.value = false
@@ -236,7 +235,7 @@ function selectItem(item) {
         </v-btn>
       </v-card-title>
       <v-card-subtitle class="d-flex align-center">
-        Si no encuentras el proyecto, puedes crear uno nuevo.
+        Si no encuentras el {{ collection_data.name }}, puedes crear uno nuevo.
         <v-spacer></v-spacer>
       </v-card-subtitle>
     </template>
@@ -277,7 +276,7 @@ function selectItem(item) {
 <!--          v-model="final_filters.q"-->
         <v-text-field
           v-model="q_value"
-          :label="`Buscar ${collection_data.name || 'elementos'}`"
+          :label="`Buscar ${collection_data.plural_name || 'elementos'}`"
           outlined
           density="comfortable"
           clearable
@@ -287,6 +286,9 @@ function selectItem(item) {
           variant="underlined"
           hide-details
           max-width="300"
+          min-width="200"
+          append-inner-icon="search"
+          @click:append-inner="applyFilters()"
         ></v-text-field>
         <v-select
           v-if="final_sorts.length"
