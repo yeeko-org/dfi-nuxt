@@ -63,7 +63,10 @@ const main_collections = computed(() => {
       <client-only>
         <v-toolbar-title class="d-flex align-center">
           <v-icon class="mr-3" color="white">
-            {{ collection_data.icon || (collection_data.parent ? collection_data.parent.icon : 'dashboard') }}
+            {{ collection_data.icon ||
+              (collection_data.parent
+                ? collection_data.parent.icon
+                : 'dashboard') }}
           </v-icon>
           <span class="text-white">
             {{ collection_data.plural_name }}
@@ -122,7 +125,9 @@ const main_collections = computed(() => {
                   :title="collection.plural_name"
                   :value="collection.snake_name"
                   :prepend-icon="collection.icon || 'category'"
-                  :base-color="collection.color ? `${collection.color}` : 'grey-darken-1'"
+                  :base-color="collection.color
+                    ? `${collection.color}`
+                    : 'grey-darken-1'"
                   :to="`/dashboard/${collection.snake_name}`"
                   _to="`/dashboard/catalog/${sub_item.key}`"
                   :class="collection.level === 'primary' ? '' : 'ml-2'"

@@ -1,5 +1,7 @@
 import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import dotenv from 'dotenv'
+dotenv.config()
 export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
   build: {
@@ -13,6 +15,19 @@ export default defineNuxtConfig({
         config.plugins.push(vuetify({ autoImport: true }))
       })
     },
+    '@nuxtjs/google-fonts',
+    [
+      '@storyblok/nuxt',
+      {
+        accessToken: process.env.NUXT_SECRET_STORYBLOK_TOKEN,
+        bridge: true,
+        devtools: true,
+        // enableSudoMode: true,
+        apiOptions: {
+          region: '' // Set 'US" if your space is created in US region (EU default)
+        }
+      }
+    ]
   ],
   devServer: {
     https: {
@@ -22,6 +37,12 @@ export default defineNuxtConfig({
       cert: 'localhost.pem',
     },
     port: 3009,
+  },
+  googleFonts: {
+    families: {
+      Montserrat: [400, 700, 900],
+      Oswald: [700],
+    }
   },
   vite: {
     vue: {

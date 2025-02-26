@@ -4,7 +4,6 @@ import { aliases, md } from 'vuetify/iconsets/md'
 import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
 import { VDateInput } from "vuetify/labs/VDateInput"
-import colors from 'vuetify/lib/util/colors';
 
 export default defineNuxtPlugin((app) => {
   const vuetify = createVuetify({
@@ -16,12 +15,12 @@ export default defineNuxtPlugin((app) => {
         light: {
           dark: false,
           colors: {
-            // primary: colors.indigo.darken1,
-            // secondary: '#424242',
-            // accent: colors.teal.accent4,
-            primary: "#d6cb54",
-            secondary: colors.cyan.base,
-            accent: colors.deepPurple.base,
+            primary: "#671220",
+            secondary: "#94607d",
+            accent: "#c72d67",
+            pink: "#f6b6bd",
+            pinked: "#f6b6bd",
+            choco: "#3A0811",
           }
         }
       }

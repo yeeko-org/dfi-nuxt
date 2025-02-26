@@ -4,12 +4,12 @@ const { $preview } = useNuxtApp()
 const version = $preview ? 'draft' : 'published'
 // const storyblokApi = useStoryblokApi();
 const story = await useAsyncStoryblok(
-    'home',
+    'home-alt',
     { version: version },
 { customParent: 'https://app.storyblok.com' }
 )
 
-// console.log('story', story)
+console.log('story', story)
 
 useSeoMeta({
   title: 'Observatorio Electoral Judicial',

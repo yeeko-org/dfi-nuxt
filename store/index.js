@@ -428,8 +428,7 @@ export const useMainStore = defineStore('main', {
         await ApiService.delete(`/${group}/${id}/`);
         return id
       } catch (error) {
-        console.error(error)
-        ;
+        console.error(error);
       }
     },
     async fetchElements([group, params]) {

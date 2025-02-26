@@ -1,41 +1,87 @@
 <script setup>
 
+import MainNav from "~/components/web/MainNav.vue";
+import Footer from "~/components/web/Footer.vue";
+
+
+import {nextTick, onMounted} from "vue";
+import {useWebStore} from '~/store/web.js'
+const storyblokApi = useStoryblokApi();
+
+const { $preview } = useNuxtApp()
+
+const webStore = useWebStore()
+const { setDocuments, setAllDocuments, setGlobalConfig } = webStore
+
+const version = $preview ? 'draft' : 'published'
+
+onMounted(() => {
+  nextTick(() => {
+    // storyblokApi.get(
+    //   `cdn/stories/documents`,
+    //   {
+    //     version: version,
+    //   }
+    // ).then(({data}) => {
+    //   // console.log("data", data);
+    //   setDocuments(data.story.content);
+    //   // documents.value = data.story.content;
+    // });
+    // storyblokApi.getAll(
+    storyblokApi.getStories({
+        version: version,
+        starts_with: "report/"
+      }
+    ).then(({data}) => {
+      console.log("data all_documents", data);
+      setAllDocuments(data.stories);
+      // documents.value = data.story.content;
+    });
+    storyblokApi.get(
+      `cdn/stories`,
+      {
+        version: version,
+        starts_with: "global"
+      }
+    ).then(({data}) => {
+      if (data.stories.length)
+        setGlobalConfig(data.stories[0].content);
+    });
+  });
+});
+
+
+
 </script>
 
 <template>
   <v-app>
-    <v-app-bar
-      app
-      color="primary"
-      dark
-      flat
-      class="mt-n1"
-      clipped-left
-      height="48"
-    >
-      <v-toolbar-title class="d-flex align-center">
-        <v-icon class="mr-3" color="white">
-          dashboard
-        </v-icon>
-        <span class="text-white">
-          Inicio de sesión
-        </span>
-      </v-toolbar-title>
-      <v-spacer></v-spacer>
-    </v-app-bar>
-    <v-main>
-      <v-container
-        _style="width: 100%;"
-        class="pt-0"
-        width="600"
-      >
-        <v-layout align-center justify-center >
-
-          <client-only>
-            <NuxtPage/>
-          </client-only>
-        </v-layout>
+    <MainNav/>
+<!--    <v-app-bar-->
+<!--      app-->
+<!--      color="primary"-->
+<!--      dark-->
+<!--      flat-->
+<!--      class="mt-n1"-->
+<!--      clipped-left-->
+<!--      height="48"-->
+<!--    >-->
+<!--      <v-toolbar-title class="d-flex align-center">-->
+<!--        HOLA MUNDO-->
+<!--      </v-toolbar-title>-->
+<!--      <v-spacer></v-spacer>-->
+<!--    </v-app-bar>-->
+    <v-responsive max-width="1024" class="mx-auto">
+    <v-main class="" id="app-width">
+      <v-container class="px-1 px-sm-3" fluid>
+        <NuxtPage />
       </v-container>
     </v-main>
+    </v-responsive>
+    <Footer />
   </v-app>
 </template>
+
+<style lang="scss">
+@use '../assets/css/utils.scss' as *;
+</style>
