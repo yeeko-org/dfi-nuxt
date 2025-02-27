@@ -44,6 +44,7 @@ onMounted(() => {
         starts_with: "global"
       }
     ).then(({data}) => {
+      console.log("data global_config", data);
       if (data.stories.length)
         setGlobalConfig(data.stories[0].content);
     });
@@ -72,11 +73,11 @@ onMounted(() => {
 <!--      <v-spacer></v-spacer>-->
 <!--    </v-app-bar>-->
     <v-responsive max-width="1024" class="mx-auto">
-    <v-main class="" id="app-width">
-      <v-container class="px-1 px-sm-3" fluid>
-        <NuxtPage />
-      </v-container>
-    </v-main>
+      <v-main class="" id="app-width">
+        <v-container class="_px-1 _px-sm-3 pa-0" fluid>
+          <NuxtPage />
+        </v-container>
+      </v-main>
     </v-responsive>
     <Footer />
   </v-app>

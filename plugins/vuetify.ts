@@ -18,7 +18,7 @@ export default defineNuxtPlugin((app) => {
             primary: "#671220",
             secondary: "#94607d",
             accent: "#c72d67",
-            pink: "#f6b6bd",
+            pinky: "#c72d67",
             pinked: "#f6b6bd",
             choco: "#3A0811",
           }

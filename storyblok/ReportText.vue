@@ -2,6 +2,7 @@
 import {computed, ref} from "vue";
 import {useDisplay} from "vuetify";
 const { mdAndUp } = useDisplay()
+import {getDocumentType} from "~/composables/documents.js";
 
 const props = defineProps({
   blok: Object,
@@ -14,13 +15,6 @@ const typeDocuments = ref({
   "Informe": ['#dabdff', '#c192ff', 'purple'],
   "Comunicado": ['#516fce', '#001249', 'info'],
 })
-
-const document_types = {
-  "annual": {"name": "Informe anual", "colors": ['#dabdff', '#c192ff', 'purple']},
-  "quarterly": {"name": "Informe trimestral", "colors": ['#dabdff', '#c192ff', 'purple']},
-  "monthly": {"name": "Boletín Mensual", "colors": ['#dabdff', '#c192ff', 'purple']},
-}
-const default_type = {name: "Informe", colors: ['#feaabc', '#fd7291', 'pink']}
 
 const explanation = computed(() => {
   let rich_text = renderRichText(props.blok.text)
@@ -44,8 +38,8 @@ const padding_top = computed(() => {
 const title_color = computed(() => {
   if (props.report_blok){
     // const type_doc = typeDocuments.value[props.report_blok.type_doc]
-    const type_doc = document_types[props.report_blok.type_doc] || default_type
-    return type_doc.colors[2]
+    const document_type = getDocumentType(props.report_blok.type_doc)
+    return document_type.v_color
   }
 
   return 'secondary'
@@ -57,9 +51,9 @@ const title_color = computed(() => {
   <v-card
     v-editable="blok"
     elevation="6"
-    class="pb-2 pb-md-4 mt-5 pt-12"
+    class="pb-2 pb-md-4 mx-3"
   >
-    <v-row class="mx-3 my-0" align="start" v-if="true">
+    <v-row class="mx-3 my-0" align="start">
       <v-col
         v-if="blok.title"
         cols="12"
@@ -68,7 +62,7 @@ const title_color = computed(() => {
         <div>
           <v-sheet
             :color="title_color"
-            class="mt-n12 px-5 py-1 text-white font-weight-bold text-h5"
+            class="px-5 py-1 text-white font-weight-bold text-h5"
           >
             <div class="oswald">
               {{blok.title}}

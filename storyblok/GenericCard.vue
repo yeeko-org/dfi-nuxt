@@ -59,17 +59,19 @@ const blok_header = computed(() => {
   <v-col
     v-editable="blok"
     :cols="blok.cols"
+    :sm="blok.sm || blok.md"
     :md="blok.md"
-    class="py-0 py-sm-3"
+    class="py-0 _py-sm-3"
     :class="space_class"
     :order="blok.order || 1"
     :order-md="blok.order_md || 1"
+    :order-sm="blok.order_sm || 1"
   >
     <v-card
       variant="text"
       _color="blok.background_color2 || 'transparent'"
       :class="`${blok.free_class} text-${blok.align_text} text-sm-${blok.align_md}`"
-      class="rounded-0 d-flex flex-column justify-center fill-height py-0 py-sm-4"
+      class="rounded-0 d-flex flex-column justify-center fill-height py-0 _py-sm-4"
       elevation="0"
     >
 

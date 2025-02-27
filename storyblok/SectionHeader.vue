@@ -22,17 +22,19 @@ function openDoc(item) {
     class="section-header mb-1 pt-2 d-flex justify-space-between"
     :class="{report_block: 'text-center'}"
   >
-    <v-sheet
-      v-if="report_blok.cover"
-      width="290"
-      max-height="300"
+    <v-card
+      v-if="report_blok?.cover"
+      width="340"
+      class="white-outlined ml-2 ml-sm-10 mr-2"
+      color="transparent"
+      rounded="xl"
     >
       <v-img
         :aspect-ratio="1"
-        :src="resizeImg(blok.cover, 300)"
-        class="mx-3"
+        :src="resizeImg(report_blok.cover, 350)"
+        class="ma-3"
       ></v-img>
-    </v-sheet>
+    </v-card>
     <v-spacer v-else></v-spacer>
     <div class="d-flex flex-column">
       <div
@@ -52,25 +54,15 @@ function openDoc(item) {
           v-text="blok.explanation"
         />
       </template>
-<!--      <v-btn-->
-<!--        v-if="report_blok"-->
-<!--        class="mt-4 mx-4"-->
-<!--        color="accent"-->
-<!--        variant="tonal"-->
-<!--        append-icon="file_download"-->
-<!--        v-tooltip="'Descargar'"-->
-<!--        @click="openDoc(report_blok)"-->
-<!--      >-->
-<!--        Descargar-->
-<!--      </v-btn>-->
       <v-btn
         v-if="report_blok"
         variant="elevated"
         color="accent"
         size="large"
-        class="white-outlined px-5 mx-2"
+        class="white-outlined px-5 mx-4 mt-4 align-self-start"
         v-tooltip="'Descargar'"
         rounded="lg"
+        append-icon="file_download"
         @click="openDoc(report_blok)"
       >
         Descargar

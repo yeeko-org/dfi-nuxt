@@ -4,6 +4,7 @@ import 'dayjs/locale/es'
 import { ref, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import {useWebStore} from '~/store/web.js'
+import {getDocumentType} from "~/composables/documents.js";
 
 import { useDisplay } from 'vuetify'
 const { xs, smAndUp } = useDisplay()
@@ -26,23 +27,6 @@ const selected_months = ref([])
 const selectedDocs = ref([])
 const show_all = ref(false)
 
-const typeDocuments = {
-  "Informe quincenal": ['#dabdff', '#c192ff', 'secondary'],
-  "Informe final": ['#feaabc', '#fd7291', 'pink'],
-  "Informe": ['#dabdff', '#c192ff', 'purple'],
-  "Informe anual": ['#dabdff', '#c192ff', 'purple'],
-  "Informe trimestral": ['#dabdff', '#c192ff', 'purple'],
-  // "Boletín Mensual": ['#dabdff', '#c192ff', 'purple'],
-  "Comunicado": ['#516fce', '#001249', 'info'],
-}
-
-const document_types = {
-  "annual": {"name": "Informe anual", "colors": ['#dabdff', '#c192ff', 'purple']},
-  "quarterly": {"name": "Informe trimestral", "colors": ['#dabdff', '#c192ff', 'purple']},
-  "monthly": {"name": "Boletín Mensual", "colors": ['#dabdff', '#c192ff', 'purple']},
-}
-const default_type = {name: "Informe", colors: ['#feaabc', '#fd7291', 'pink']}
-
 const final_display = computed(()=>{
   return props.blok
     ? Number(props.blok.init_display || 4)
@@ -60,16 +44,16 @@ const final_docs = computed(() => {
     return []
   return initialDocs
     .map(doc => {
-      // doc.colors = typeDocuments[doc.type_doc]
-      const type_doc = document_types[doc.type_doc] || default_type
-      doc.colors = type_doc.colors
+      // console.log("doc", doc)
+      doc.document_type = getDocumentType(doc.type_doc)
+      doc.colors = doc.document_type.colors
       const date_start = dayjs(doc.start_date.substr(0, 10))
       doc.date_start = date_start
       doc.year = date_start.year()
       doc.month = date_start.month()
       doc.month_year = date_start.format('MMMM YYYY')
       let date_text = ''
-      if (doc.type_doc.includes('quincenal')) {
+      if (doc.document_type.has_range) {
         date_text = date_start.format('[Del] D [al] ')
         const date_end = dayjs(doc.end_date.substr(0, 10))
         date_text += `${date_end.format('D [de] MMMM [de] YYYY')}`
@@ -96,11 +80,14 @@ const all_types = computed(() =>
     !arr.includes(doc.type_doc)
       ? [...arr, doc.type_doc]
       : arr), []
-  ).map((type) => ({
-    name: type,
+  ).map((type) => {
+    const document_type = getDocumentType(type)
+    return {
+      ...document_type,
+      key: type,
+    }
     // colors: typeDocuments[type]
-    colors: document_types[type] ? document_types[type].colors : default_type.colors
-  }))
+  })
 )
 
 const filteredDocs = computed(() => {
@@ -112,7 +99,7 @@ const filteredDocs = computed(() => {
     : all_types.value
   let filtered_docs = final_docs.value.filter(
     doc =>
-      selectedDocList.some(selDoc => selDoc.name === doc.type_doc) &&
+      selectedDocList.some(selDoc => selDoc.key === doc.type_doc) &&
       selected_month_list.includes(doc.month_year)
   )
   console.log('filtered_docs', filtered_docs)

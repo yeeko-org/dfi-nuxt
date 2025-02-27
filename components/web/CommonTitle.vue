@@ -24,7 +24,7 @@ const final_sm_align = computed(() => {
 <template>
   <v-card-title
     v-if="blok.subheader"
-    class="text-h5 text-sm-h4 font-weight-black d-flex flex-column align-center"
+    class="text-h5 text-sm-h4 font-weight-black d-flex flex-column align-center pt-0"
     :class="`text-${blok.color_title || 'primary'} align-${final_align} align-sm-${final_sm_align}`"
   >
     <span

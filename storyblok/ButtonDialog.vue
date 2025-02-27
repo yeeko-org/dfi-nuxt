@@ -13,7 +13,7 @@ const props = defineProps({
 const dialog = ref(false)
 
 function openDialog() {
-  console.log('openDialog')
+  // console.log('openDialog')
   dialog.value = true
 }
 
