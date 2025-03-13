@@ -79,4 +79,9 @@ const final_buttons = computed(() => {
   .header-xs{
     margin-left: -10px
   }
+  .app-width2{
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 1024px;
+  }
 </style>

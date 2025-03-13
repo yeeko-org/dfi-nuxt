@@ -25,7 +25,6 @@
     </v-app-bar>
     <v-main>
       <v-container
-        _style="width: 100%;"
         class="pt-0"
         width="600"
       >

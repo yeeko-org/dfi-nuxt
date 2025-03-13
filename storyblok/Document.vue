@@ -33,7 +33,6 @@ function openDoc(item) {
       <v-sheet
         color="secondary"
         class="full-height d-flex justify-center align-center pl-2"
-        _style="{backgroundImage: `url(https://a.storyblok.com/f/327491/2550x3300/3994476a6e/fondo.png)`}"
       >
         <v-card
           _width="340"

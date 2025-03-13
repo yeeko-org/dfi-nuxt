@@ -6,9 +6,6 @@ import { storeToRefs } from 'pinia'
 import {useWebStore} from '~/store/web.js'
 import {getDocumentType} from "~/composables/documents.js";
 
-import { useDisplay } from 'vuetify'
-const { xs, smAndUp } = useDisplay()
-import { resizeImg, transformImage } from '~/composables/storyblok_images.js'
 import Document from "~/storyblok/Document.vue"
 
 dayjs.locale('es')

@@ -13,7 +13,7 @@
     "@date-io/date-fns": "^3.0.0",
     "@mdi/font": "^7.4.47",
     "@nuxtjs/google-fonts": "^3.2.0",
-    "@pinia/nuxt": "^0.9.0",
+    "@pinia/nuxt": "^0.10.1",
     "@storyblok/nuxt": "^6.2.2",
     "axios": "^1.7.4",
     "d3": "^7.9.0",

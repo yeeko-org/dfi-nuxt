@@ -176,7 +176,6 @@ const main_collections = computed(() => {
     </v-navigation-drawer>
     <v-main>
       <v-container
-        _style="width: 100%;"
         class="pt-0"
         fluid
       >

@@ -1,6 +1,7 @@
 <script setup>
 // import { computed, ref, onMounted } from 'vue'
 import CommonTitle from "../components/web/CommonTitle.vue";
+import {computed} from "vue";
 
 // defineProps({ blok: Object });
 const props = defineProps({
@@ -16,9 +17,20 @@ const space_class = computed(() => {
   return final_class
 })
 
-const description2 = computed(() => {
+const description3 = computed(() => {
   return renderRichText(props.blok.description2)
 })
+
+const description2 = computed(() => {
+  let rich_text = renderRichText(props.blok.description2)
+  if (!rich_text)
+    return null
+  rich_text = rich_text.replace(
+      /<p>/g, '<p class="mt-2 mt-sm-4 montse">')
+  return rich_text
+  // return renderRichText(props.blok.text)
+})
+
 const color_description = computed(() =>
     props.blok.color_description || 'black')
 
