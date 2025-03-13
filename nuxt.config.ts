@@ -7,6 +7,7 @@ export default defineNuxtConfig({
   build: {
     transpile: ['vuetify'],
   },
+  ssr: true,
   modules: [
     '@pinia/nuxt',
     (_options, nuxt) => {
@@ -45,11 +46,21 @@ export default defineNuxtConfig({
     }
   },
   vite: {
+    ssr: {
+      noExternal: ['vuetify'],
+    },
     vue: {
       template: {
         transformAssetUrls,
       },
     },
-  }
+  },
+  vuetify: {
+    autoImport: true,
+
+    styles: {
+      configFile: 'assets/settings.scss',
+    },
+  },
   // devtools: { enabled: true }
 })
