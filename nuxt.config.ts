@@ -55,12 +55,15 @@ export default defineNuxtConfig({
       },
     },
   },
-  vuetify: {
-    autoImport: true,
-
-    styles: {
-      configFile: 'assets/settings.scss',
-    },
-  },
+  // alias: {
+  //   vue: 'vue/dist/vue.esm-bundler.js'
+  // },
+  // vuetify: {
+  //   autoImport: true,
+  //
+  //   styles: {
+  //     configFile: 'assets/settings.scss',
+  //   },
+  // },
   // devtools: { enabled: true }
 })
