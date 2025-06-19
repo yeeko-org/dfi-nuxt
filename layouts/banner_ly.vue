@@ -56,21 +56,31 @@ onMounted(() => {
 </script>
 
 <template>
-  <v-layout>
-<!--  <v-app>-->
-
+  <v-app>
+<!--    <MainNav/>-->
+<!--    <v-app-bar-->
+<!--      app-->
+<!--      color="primary"-->
+<!--      dark-->
+<!--      flat-->
+<!--      class="mt-n1"-->
+<!--      clipped-left-->
+<!--      height="48"-->
+<!--    >-->
+<!--      <v-toolbar-title class="d-flex align-center">-->
+<!--        HOLA MUNDO-->
+<!--      </v-toolbar-title>-->
+<!--      <v-spacer></v-spacer>-->
+<!--    </v-app-bar>-->
     <v-responsive max-width="1024" class="mx-auto">
-      <MainNav/>
       <v-main class="" id="app-width">
         <v-container class="_px-1 _px-sm-3 px-0 pt-0" fluid>
           <NuxtPage />
         </v-container>
       </v-main>
     </v-responsive>
-
-  </v-layout>
-  <Footer />
-<!--  </v-app>-->
+<!--    <Footer />-->
+  </v-app>
 </template>
 
 <style lang="scss">

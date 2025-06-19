@@ -182,14 +182,14 @@ const filteredDocs = computed(() => {
         v-if="!show_all && (final_display < final_docs.length)"
       >
         <v-spacer></v-spacer>
-        <v-btn
+        <v-btn-primary
           color="accent"
           variant="outlined"
           append-icon="expand_more"
           @click="show_all = true"
         >
           Mostrar más
-        </v-btn>
+        </v-btn-primary>
         <v-spacer></v-spacer>
       </v-card-actions>
 <!--    </template>-->

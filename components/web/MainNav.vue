@@ -37,41 +37,50 @@ const final_buttons = computed(() => {
 
 <template>
   <v-app-bar
-    color="primary"
-    height="90"
+    color="white"
+    height="70"
+    class="_pt-4 d-flex align-center justify-space-between"
+    max-width="1024"
+    extension-height="38"
+    extended
+    _style="padding-left: 120px; padding-right: 120px;"
+    elevation="0"
+    style="margin-left: auto; margin-right: auto;"
   >
-    <div
-      class="app-width2 d-flex align-center px-3"
-    >
-      <router-link to="/" class="d-flex align-center">
-        <span class="text-white oswald text-h4 text-pinked">
-          TRAVESÍAS FORZADAS
-        </span>
-<!--        <v-img-->
-<!--          src="~/assets/nuevo_logo.png"-->
-<!--          :height="xs ? 64 : 76"-->
-<!--          :width="xs ? 64 : 76"-->
-<!--        />-->
-<!--        <v-img-->
-<!--          class="ml-3"-->
-<!--          src="~/assets/letras.png"-->
-<!--          :height="xs ? 60 : 70"-->
-<!--          :width="xs ? 190 : 220"-->
-<!--        />-->
-      </router-link>
-    </div>
-    <v-spacer></v-spacer>
-    <div v-if="final_buttons.length">
+    <template v-slot:default>
+      <div
+        class="app-width2 align-center py-4"
+        style="width: 1024px; margin-left: auto; margin-right: auto;"
+      >
 
-      <StoryblokComponent
-        v-for="blok in final_buttons"
-        :key="blok._uid"
-        :blok="blok"
-        fixed_size="default"
-        fixed_variant="text"
-        fixed_color="white"
-      ></StoryblokComponent>
-    </div>
+        <router-link to="/" _class="d-flex align-center">
+          <v-img
+            src="~/assets/logo_ibero.png"
+            _height="xs ? 64 : 76"
+            _width="xs ? 64 : 320"
+            :height="xs ? 60 : 40"
+            :width="xs ? 190 : 120"
+          />
+        </router-link>
+      </div>
+
+    </template>
+    <template v-slot:extension v-if="final_buttons.length">
+      <div
+        style="width: 1024px; margin-left: auto; margin-right: auto;"
+      >
+        <v-divider></v-divider>
+        <StoryblokComponent
+          v-for="blok in final_buttons"
+          :key="blok._uid"
+          :blok="blok"
+          fixed_size="default"
+          fixed_variant="text"
+          fixed_color="white"
+        ></StoryblokComponent>
+        <v-divider class="pb-0 pt-0"></v-divider>
+      </div>
+    </template>
   </v-app-bar>
 </template>
 

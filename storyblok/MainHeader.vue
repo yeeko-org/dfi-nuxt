@@ -39,6 +39,7 @@ onMounted(() => {
         color="transparent"
         elevation="0"
       >
+
         <CommonTitle
           :blok="blok"
         />

@@ -22,29 +22,24 @@ const offsetFirst = computed(() => {
 </script>
 
 <template>
-  <v-row class="mt-4 mx-3">
+  <v-row class="_mt-4 mx-3">
     <v-col
       v-for="(counter, index) in blok.counters"
       :key="counter._uid"
-      cols="6"
+      cols="12"
       sm="4"
       :class="!index ? offsetFirst : ''"
-      class="text-center px-6 pb-6"
+      class="text-left px-6 pb-6"
       v-editable="counter"
     >
-      <v-avatar
-        :size="avatar_size"
-        class="mx-auto"
-        color="transparent"
-        style="background-color: #fc0a41;"
-      >
-        <span class="text-h3 text-sm-h1 font-weight-bold text-white montse">
-          {{ counter.number }}
+      <span class="text-h3 text-sm-h1">
+        {{ counter.number }}
+        <span v-if="counter.measure" class="ml-n5">
+          {{counter.measure}}
         </span>
-      </v-avatar>
+      </span>
       <p
-        class="text-center font-weight-bold text-h6 text-sm-h5 mt-5 montse"
-        :class="`text-${blok.color_title || 'primary'}`"
+        class="text-left text-subtitle-1 mt-5 montse"
       >
         {{ counter.title }}
       </p>

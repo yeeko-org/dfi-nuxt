@@ -54,13 +54,13 @@ const dialog_text_simple = computed(() => {
 </script>
 
 <template>
-  <v-btn
+  <v-btn-primary
     v-if="blok.behavior === 'dialog'"
     :variant="variant"
     color="accent"
     :size="blok.size || 'large'"
     class="mx-2"
-    :class="blok.style ? 'text-white px-3' : 'white-outlined px-5'"
+    _class="blok.style ? 'text-white px-3' : 'white-outlined px-5'"
     @click="openDialog"
     id="button_new"
     rounded="lg"
@@ -102,20 +102,28 @@ const dialog_text_simple = computed(() => {
         </v-card-text>
       </v-card>
     </v-dialog>
-  </v-btn>
-  <v-btn
+  </v-btn-primary>
+  <v-btn-menu
+    v-else-if="blok.behavior === 'menu'"
+    :variant="variant"
+    color="secondary"
+    size="default"
+    :to="blok.to.cached_url || blok.to.url"
+    id="button_new"
+  >
+    {{blok.button_title}}
+  </v-btn-menu>
+  <v-btn-primary
     v-else
     :variant="variant"
     color="accent"
     :size="blok.size || 'large'"
     class="mx-2"
-    :class="blok.style ? 'text-white px-3' : 'white-outlined px-5'"
     :to="blok.to.cached_url || blok.to.url"
     id="button_new"
-    rounded="lg"
   >
     {{blok.button_title}}
-  </v-btn>
+  </v-btn-primary>
 <!--  <v-btn-->
 <!--    -->
 <!--    :variant="variant"-->

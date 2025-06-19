@@ -43,6 +43,7 @@ export default defineNuxtConfig({
     families: {
       Montserrat: [400, 700, 900],
       Oswald: [700],
+      "PT+Serif": [700],
     }
   },
   vite: {

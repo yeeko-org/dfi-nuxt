@@ -1,6 +1,12 @@
 <script setup>
 const { $preview } = useNuxtApp()
 const { page_name } = useRoute().params
+console.log('page_name', page_name)
+definePageMeta({
+  // middleware: 'dashboard',
+  layout: 'banner_ly',
+})
+
 // const version_sb = process.env.NUXT_PUBLIC_STORYBLOK_VERSION
 const version = $preview ? 'draft' : 'published'
 const story = await useAsyncStoryblok(

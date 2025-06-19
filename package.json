@@ -12,9 +12,11 @@
   "dependencies": {
     "@date-io/date-fns": "^3.0.0",
     "@fontsource/montserrat": "^5.1.1",
+    "@fontsource/pt-serif": "^5.2.5",
     "@fontsource/oswald": "^5.1.1",
     "@pinia/nuxt": "^0.5.1",
     "@storyblok/nuxt": "^6.2.2",
+    "@mdi/font": "^7.4.47",
     "axios": "^1.7.4",
     "d3": "^7.9.0",
     "dayjs": "^1.11.13",
@@ -33,7 +35,6 @@
     "material-design-icons-iconfont": "^6.7.0",
     "sass-embedded": "^1.85.0",
     "@nuxtjs/google-fonts": "^3.2.0",
-    "@mdi/font": "^7.4.47",
     "vite-plugin-vuetify": "^2.0.4"
   },
   "config": {

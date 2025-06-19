@@ -26,7 +26,8 @@ const space_class = computed(() => {
   >
     <v-img
       cover
-      :src="resizeImg(blok.image)"
+      style="max-width: 100%; height: 100%;"
+      :src="resizeImg(blok.image, 800)"
     ></v-img>
   </v-col>
 </template>

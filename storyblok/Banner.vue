@@ -85,35 +85,38 @@ const blok_header = computed(() => {
       class="rounded-0 d-flex flex-column justify-center fill-height py-0 _py-sm-4"
       elevation="0"
     >
-
-      <div>
-        <CommonTitle
-          v-if="blok.title"
-          :blok="blok_header"
-        />
-        <v-card-text v-if="description2" class="py-2 py-sm-4">
-          <div
-            class="text-text-1 text-sm-subtitle-1 _mt-2 _mt-sm-4 montse"
-            v-html="description2"
-          ></div>
-        </v-card-text>
-        <v-card-actions v-if="blok.buttons.length">
-          <v-spacer></v-spacer>
-          <StoryblokComponent
-            v-for="blok in blok.buttons"
-            :key="blok._uid"
-            :blok="blok"
-          ></StoryblokComponent>
-          <v-spacer></v-spacer>
-        </v-card-actions>
-        <v-card-text v-if="blok.contents?.length" class="py-2 py-sm-4">
-          <StoryblokComponent
-            v-for="blok in blok.contents"
-            :key="blok._uid"
-            :blok="blok"
-          ></StoryblokComponent>
-        </v-card-text>
-      </div>
+      <v-row no-gutters>
+        <v-col cols="6">
+          <CommonTitle
+            v-if="blok.title"
+            :blok="blok_header"
+          />
+        </v-col>
+        <v-col cols="6">
+          <v-card-text v-if="description2" class="_py-2 _py-sm-4">
+            <div
+              class="text-text-1 text-sm-subtitle-1 _mt-2 _mt-sm-4 montse"
+              v-html="description2"
+            ></div>
+          </v-card-text>
+          <v-card-actions v-if="blok.buttons.length">
+            <v-spacer></v-spacer>
+            <StoryblokComponent
+              v-for="blok in blok.buttons"
+              :key="blok._uid"
+              :blok="blok"
+            ></StoryblokComponent>
+            <v-spacer></v-spacer>
+          </v-card-actions>
+          <v-card-text v-if="blok.contents?.length" class="py-2 py-sm-4">
+            <StoryblokComponent
+              v-for="blok in blok.contents"
+              :key="blok._uid"
+              :blok="blok"
+            ></StoryblokComponent>
+          </v-card-text>
+        </v-col>
+      </v-row>
     </v-card>
   </v-col>
 

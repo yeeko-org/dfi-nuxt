@@ -115,7 +115,8 @@ function openDoc(item) {
       <v-card
         v-if="report_blok"
         class="pb-2 pb-md-4 mt-3 pt-3"
-        elevation="6"
+        elevation="0"
+        variant="flat"
       >
 
         <CommonTitle

@@ -35,10 +35,10 @@ function openDoc(item) {
         class="ma-3"
       ></v-img>
     </v-card>
-    <v-spacer v-else></v-spacer>
+    <v-spacer v-else-if="!blok.left_align"></v-spacer>
     <div class="d-flex flex-column">
       <div
-        class="text-uppercase text-caption text-grey-darken-2 px-4"
+        class="text-uppercase text-body-2 text-grey-darken-2 px-4"
         :class="report_blok ? '' : 'mb-4'"
       >
         {{blok.header}}
