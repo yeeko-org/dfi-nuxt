@@ -11,9 +11,6 @@
   },
   "dependencies": {
     "@date-io/date-fns": "^3.0.0",
-    "@fontsource/montserrat": "^5.1.1",
-    "@fontsource/pt-serif": "^5.2.5",
-    "@fontsource/oswald": "^5.1.1",
     "@pinia/nuxt": "^0.5.1",
     "@storyblok/nuxt": "^6.2.2",
     "@mdi/font": "^7.4.47",

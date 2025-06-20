@@ -37,14 +37,18 @@ export default defineNuxtConfig({
       key: 'localhost-key.pem',
       cert: 'localhost.pem',
     },
-    port: 3009,
+    port: 3001,
   },
   googleFonts: {
     families: {
       Montserrat: [400, 700, 900],
       Oswald: [700],
       "PT+Serif": [700],
-    }
+    },
+    display: 'swap',
+    preload: true,
+    prefetch: true,
+    preconnect: true
   },
   vite: {
     ssr: {
