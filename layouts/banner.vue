@@ -56,7 +56,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <v-app>
+  <v-layout>
 <!--    <MainNav/>-->
 <!--    <v-app-bar-->
 <!--      app-->
@@ -80,7 +80,7 @@ onMounted(() => {
       </v-main>
     </v-responsive>
 <!--    <Footer />-->
-  </v-app>
+  </v-layout>
 </template>
 
 <style lang="scss">

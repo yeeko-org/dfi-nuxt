@@ -23,6 +23,10 @@ export default defineNuxtConfig({
         accessToken: process.env.NUXT_SECRET_STORYBLOK_TOKEN,
         bridge: true,
         devtools: true,
+        cache: {
+          clear: "auto",
+          type: "memory",
+        },
         // enableSudoMode: true,
         apiOptions: {
           region: '' // Set 'US" if your space is created in US region (EU default)
